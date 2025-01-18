@@ -1,3 +1,18 @@
+
+//
+//
+//
+//
+//
+//
+// this file is for reference , to run the mobile backend locally, find the ArtConnectBachend.zip in root directory, run it using "npx nodemon server.js"
+// change the local ip address on mobileApp to your local id address, use "npx expo start" 
+// and run the code on your local simulator
+
+
+
+
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
