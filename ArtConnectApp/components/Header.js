@@ -6,6 +6,14 @@ import { AuthContext } from '../AuthContext';
 const Header = ({ navigation, showBackButton }) => {
   const { isLoggedIn } = useContext(AuthContext);
 
+  const handleProfilePress = () => {
+    if (isLoggedIn) {
+      navigation.navigate('Home', { screen: 'Settings' });
+    } else {
+      navigation.navigate('Auth', { screen: 'Login' });
+    }
+  };
+
   const handlePostPress = () => {
     if (!isLoggedIn) {
       navigation.navigate('Auth', { screen: 'Login' });
@@ -39,7 +47,7 @@ const Header = ({ navigation, showBackButton }) => {
             name="person-circle-outline"
             size={24}
             style={styles.icon}
-            onPress={() => navigation.navigate('Auth')}
+            onPress={handleProfilePress}
           />
         </View>
       </View>
