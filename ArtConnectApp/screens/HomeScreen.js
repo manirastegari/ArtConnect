@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-import { SafeAreaView, View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import { AuthContext } from '../AuthContext';
