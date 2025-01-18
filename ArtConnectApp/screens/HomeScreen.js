@@ -32,8 +32,43 @@ const FavoritesScreen = ({ navigation }) => {
 };
 
 const SettingsScreen = ({ navigation }) => {
-  const { isLoggedIn } = useContext(AuthContext);
-  return isLoggedIn ? <View><Text>Settings Content</Text></View> : <LoginPrompt navigation={navigation} />;
+  const { isLoggedIn, logout } = useContext(AuthContext);
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://192.168.2.27:5001/api/users/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Include credentials if needed, e.g., cookies or tokens
+        // credentials: 'include',
+      });
+
+      if (response.ok) {
+        logout(); // Call the context logout function
+        navigation.navigate('Search');
+      } else {
+        console.error('Failed to log out');
+      }
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  return isLoggedIn ? (
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Text>Settings Content</Text>
+        {/* Add other settings content here */}
+      </View>
+      <View style={styles.logoutButtonContainer}>
+        <Button title="Logout" onPress={handleLogout} />
+      </View>
+    </View>
+  ) : (
+    <LoginPrompt navigation={navigation} />
+  );
 };
 
 const Tab = createBottomTabNavigator();
@@ -86,6 +121,17 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  content: {
+    // Add any additional styling for the content here
+  },
+  logoutButtonContainer: {
+    marginBottom: 20, // Add some margin if needed
     alignItems: 'center',
   },
 });
