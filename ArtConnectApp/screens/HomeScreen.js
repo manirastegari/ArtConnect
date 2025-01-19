@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,9 +17,51 @@ const LoginPrompt = ({ navigation }) => (
   </View>
 );
 
+// const ArtsScreen = ({ navigation }) => {
+//   const { isLoggedIn } = useContext(AuthContext);
+//   return isLoggedIn ? <View><Text>Arts Content</Text></View> : <LoginPrompt navigation={navigation} />;
+// };
 const ArtsScreen = ({ navigation }) => {
   const { isLoggedIn } = useContext(AuthContext);
-  return isLoggedIn ? <View><Text>Arts Content</Text></View> : <LoginPrompt navigation={navigation} />;
+  const [arts, setArts] = React.useState([]);
+
+  React.useEffect(() => {
+    const fetchArts = async () => {
+      try {
+        const response = await fetch('http://192.168.2.27:5001/api/arts');
+        const data = await response.json();
+        setArts(data);
+      } catch (error) {
+        console.error('Error fetching arts:', error);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchArts();
+    }
+  }, [isLoggedIn]);
+
+  return isLoggedIn ? (
+    <View>
+      {arts.map((art, index) => (
+        <View key={index}>
+          <Text>{art.title}</Text>
+          <Text>{art.category}</Text>
+          <Text>{art.description}</Text>
+          <Text>{art.price}</Text>
+          {art.images.map((image, imgIndex) => (
+            <Image
+              key={imgIndex}
+              source={{ uri: `data:image/webp;base64,${image}` }}
+              style={{ width: 200, height: 150 }}
+            />
+          ))}
+        </View>
+      ))}
+    </View>
+  ) : (
+    <LoginPrompt navigation={navigation} />
+  );
 };
 
 const EventsScreen = ({ navigation }) => {

@@ -12,6 +12,9 @@
 
 
 
+// Mongo DB username and password
+// saeidkhalili2024
+// DZfjS3F8YrLKbJ8p
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -20,6 +23,7 @@ require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
 const artRoutes = require('./routes/artRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const cloudinary = require('cloudinary').v2;
 
 
 // Mongo DB username and password
@@ -41,6 +45,14 @@ mongoose.connect(mongoURI)
   .then(() => console.log('MongoDB connected successfully'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+
 // Define routes
 app.get('/', (req, res) => {
   res.send('Hello, ArtConnect!');
@@ -49,6 +61,7 @@ app.get('/', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
 
 
@@ -69,6 +82,7 @@ module.exports = mongoose.model('Art', artSchema);
 
 
 
+
 const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema({
@@ -86,6 +100,7 @@ module.exports = mongoose.model('Event', eventSchema);
 
 
 
+
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -97,6 +112,8 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('User', userSchema);
+
+
 
 
 
@@ -160,17 +177,23 @@ router.post('/', upload.array('images', 3), async (req, res) => {
   }
 });
 
-// Get all art pieces
+// Get all art pieces with images in base64
 router.get('/', async (req, res) => {
-  try {
-    const arts = await Art.find();
-    res.json(arts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+    try {
+      const arts = await Art.find();
+      const artsWithBase64Images = arts.map(art => ({
+        ...art.toObject(),
+        images: art.images.map(imageBuffer => imageBuffer.toString('base64'))
+      }));
+      res.json(artsWithBase64Images);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
 module.exports = router;
+
+
 
 
 
@@ -268,7 +291,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Implement token generation or session management here
-    res.status(200).json({ message: 'Login successful' });
+    res.status(200).json({ message: 'Login successful', userId: user._id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -284,6 +307,14 @@ router.post('/register', async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+});
+
+
+// Logout user
+router.post('/logout', (req, res) => {
+  // Implement token/session invalidation logic here
+  console.log('User logged out successfully');
+  res.status(200).json({ message: 'Logout successful' });
 });
 
 module.exports = router;
