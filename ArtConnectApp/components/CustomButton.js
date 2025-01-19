@@ -1,11 +1,16 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const CustomButton = ({ onPress, text, color, width }) => {
+const CustomButton = ({ onPress, text, color, width, disabled }) => {
   return (
     <TouchableOpacity
-      onPress={onPress}
-      style={[styles.button, { backgroundColor: color, width: width }]}
+      onPress={disabled ? null : onPress} // Disable onPress if the button is disabled
+      style={[
+        styles.button,
+        { backgroundColor: disabled ? '#ccc' : color, width: width }, // Change color if disabled
+        disabled && styles.disabledButton, // Apply additional styles if disabled
+      ]}
+      activeOpacity={disabled ? 1 : 0.7} // Prevent opacity change if disabled
     >
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
@@ -18,6 +23,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  disabledButton: {
+    opacity: 0.6, // Reduce opacity for a disabled look
   },
   text: {
     color: '#fff',

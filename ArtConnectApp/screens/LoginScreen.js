@@ -36,12 +36,12 @@ const LoginScreen = ({ navigation }) => {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         Alert.alert('Success', 'Logged in successfully');
-        login(); // Call login to update the context state
+        login(data.userId); // Pass the user ID to the login function
         if (saveCredentials) {
           await AsyncStorage.setItem('userEmail', email);
           await AsyncStorage.setItem('userPassword', password);
