@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import { AuthContext } from '../AuthContext';
+import CustomButton from '../components/CustomButton';
 
 const SearchScreen = () => <></>;
 
@@ -63,7 +64,12 @@ const SettingsScreen = ({ navigation }) => {
         {/* Add other settings content here */}
       </View>
       <View style={styles.logoutButtonContainer}>
-        <Button title="Logout" onPress={handleLogout} />
+        <CustomButton
+          text="Logout"
+          color="#ff6347" // Example color
+          width="80%" // Example width
+          onPress={handleLogout}
+        />
       </View>
     </View>
   ) : (

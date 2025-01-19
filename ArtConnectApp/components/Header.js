@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
+import CustomButton from './CustomButton';
 
 const Header = ({ navigation, showBackButton }) => {
   const { isLoggedIn } = useContext(AuthContext);
@@ -42,7 +43,12 @@ const Header = ({ navigation, showBackButton }) => {
           <Text style={styles.title}>ArtConnect</Text>
         </View>
         <View style={styles.rightContainer}>
-          <Button title="Post" onPress={handlePostPress} />
+        <CustomButton
+            text="Post"
+            color="#4682b4" // Example color
+            width={80} // Example width
+            onPress={handlePostPress}
+            />
           <Ionicons
             name="person-circle-outline"
             size={24}
