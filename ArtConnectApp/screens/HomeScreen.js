@@ -14,7 +14,12 @@ const SearchScreen = () => <></>;
 const LoginPrompt = ({ navigation }) => (
   <View style={styles.centeredView}>
     <Text>Please log in to continue</Text>
-    <Button title="Login" onPress={() => navigation.navigate('Auth', { screen: 'Login' })} />
+    <CustomButton
+      text="Login"
+      onPress={() => navigation.navigate('Auth', { screen: 'Login' })}
+      color="#4682b4" // You can choose any color you prefer
+      width="80%" // Adjust the width as needed
+    />
   </View>
 );
 
