@@ -1,20 +1,5 @@
+// Sample Code - all in one file - Not runing the app with these - use the Zip file ArtConnectBackend to start backend.
 
-//
-//
-//
-//
-//
-//
-// this file is for reference , to run the mobile backend locally, find the ArtConnectBachend.zip in root directory, run it using "npx nodemon server.js"
-// change the local ip address on mobileApp to your local id address, use "npx expo start" 
-// and run the code on your local simulator
-
-
-
-
-// Mongo DB username and password
-// saeidkhalili2024
-// DZfjS3F8YrLKbJ8p
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -23,7 +8,6 @@ require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
 const artRoutes = require('./routes/artRoutes');
 const eventRoutes = require('./routes/eventRoutes');
-const cloudinary = require('cloudinary').v2;
 
 
 // Mongo DB username and password
@@ -45,14 +29,6 @@ mongoose.connect(mongoURI)
   .then(() => console.log('MongoDB connected successfully'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-
-
 // Define routes
 app.get('/', (req, res) => {
   res.send('Hello, ArtConnect!');
@@ -61,8 +37,6 @@ app.get('/', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
 
 
 
@@ -117,6 +91,21 @@ module.exports = mongoose.model('User', userSchema);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
@@ -138,44 +127,45 @@ const upload = multer({
 
 // Add a new art piece
 router.post('/', upload.array('images', 3), async (req, res) => {
-  try {
-    const { title, category, price, description, artistID } = req.body;
-    const imageBuffers = await Promise.all(
-      req.files.map(async (file) => {
-        let buffer = await sharp(file.buffer)
-          .resize(1200, 800)
-          .toFormat('webp')
-          .toBuffer();
-
-        // Reduce quality until the image is under 150 KB
-        let quality = 90;
-        while (buffer.length > 150 * 1024 && quality > 10) {
-          buffer = await sharp(file.buffer)
+    try {
+      const { title, category, price, description, artistID } = req.body;
+      const imageBase64Strings = await Promise.all(
+        req.files.map(async (file) => {
+          let buffer = await sharp(file.buffer)
             .resize(1200, 800)
-            .toFormat('webp', { quality })
+            .toFormat('webp')
             .toBuffer();
-          quality -= 10;
-        }
-
-        return buffer;
-      })
-    );
-
-    const newArt = new Art({
-      title,
-      category,
-      images: imageBuffers, // Store the processed images
-      price,
-      description,
-      artistID,
-    });
-
-    await newArt.save();
-    res.status(201).json({ message: 'Art added successfully' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+  
+          // Reduce quality until the image is under 150 KB
+          let quality = 90;
+          while (buffer.length > 150 * 1024 && quality > 10) {
+            buffer = await sharp(file.buffer)
+              .resize(1200, 800)
+              .toFormat('webp', { quality })
+              .toBuffer();
+            quality -= 10;
+          }
+  
+          // Convert buffer to base64
+          return buffer.toString('base64');
+        })
+      );
+  
+      const newArt = new Art({
+        title,
+        category,
+        images: imageBase64Strings, // Store the base64 strings
+        price,
+        description,
+        artistID,
+      });
+  
+      await newArt.save();
+      res.status(201).json({ message: 'Art added successfully' });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
 
 // Get all art pieces with images in base64
 router.get('/', async (req, res) => {
@@ -192,6 +182,9 @@ router.get('/', async (req, res) => {
   });
 
 module.exports = router;
+
+
+
 
 
 
@@ -219,58 +212,64 @@ const upload = multer({
 
 // Add a new event
 router.post('/', upload.array('images', 3), async (req, res) => {
-  try {
-    const { title, category, price, description, date, time, artistID } = req.body;
-    const imageBuffers = await Promise.all(
-      req.files.map(async (file) => {
-        let buffer = await sharp(file.buffer)
-          .resize(1200, 800)
-          .toFormat('webp')
-          .toBuffer();
-
-        // Reduce quality until the image is under 150 KB
-        let quality = 90;
-        while (buffer.length > 150 * 1024 && quality > 10) {
-          buffer = await sharp(file.buffer)
+    try {
+      const { title, category, price, description, date, time, artistID } = req.body;
+      const imageBase64Strings = await Promise.all(
+        req.files.map(async (file) => {
+          let buffer = await sharp(file.buffer)
             .resize(1200, 800)
-            .toFormat('webp', { quality })
+            .toFormat('webp')
             .toBuffer();
-          quality -= 10;
-        }
-
-        return buffer;
-      })
-    );
-
-    const newEvent = new Event({
-      title,
-      category,
-      images: imageBuffers, // Store the processed images
-      price,
-      description,
-      date,
-      time,
-      artistID,
-    });
-
-    await newEvent.save();
-    res.status(201).json({ message: 'Event added successfully' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Get all events
-router.get('/', async (req, res) => {
-  try {
-    const events = await Event.find();
-    res.json(events);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  
+          // Reduce quality until the image is under 150 KB
+          let quality = 90;
+          while (buffer.length > 150 * 1024 && quality > 10) {
+            buffer = await sharp(file.buffer)
+              .resize(1200, 800)
+              .toFormat('webp', { quality })
+              .toBuffer();
+            quality -= 10;
+          }
+  
+          // Convert buffer to base64
+          return buffer.toString('base64');
+        })
+      );
+  
+      const newEvent = new Event({
+        title,
+        category,
+        images: imageBase64Strings, // Store the base64 strings
+        price,
+        description,
+        date,
+        time,
+        artistID,
+      });
+  
+      await newEvent.save();
+      res.status(201).json({ message: 'Event added successfully' });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+  
+  // Get all events with images in base64
+  router.get('/', async (req, res) => {
+    try {
+      const events = await Event.find();
+      const eventsWithBase64Images = events.map(event => ({
+        ...event.toObject(),
+        images: event.images.map(imageBuffer => imageBuffer.toString('base64'))
+      }));
+      res.json(eventsWithBase64Images);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
 module.exports = router;
+
 
 
 
