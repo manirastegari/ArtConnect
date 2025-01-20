@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet, Image } from 'react-native';
+import { View, Text, Button, StyleSheet, Image, ScrollView } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import Swiper from 'react-native-swiper';
 import Header from '../components/Header';
 import { AuthContext } from '../AuthContext';
 import CustomButton from '../components/CustomButton';
@@ -17,10 +18,6 @@ const LoginPrompt = ({ navigation }) => (
   </View>
 );
 
-// const ArtsScreen = ({ navigation }) => {
-//   const { isLoggedIn } = useContext(AuthContext);
-//   return isLoggedIn ? <View><Text>Arts Content</Text></View> : <LoginPrompt navigation={navigation} />;
-// };
 const ArtsScreen = ({ navigation }) => {
   const { isLoggedIn } = useContext(AuthContext);
   const [arts, setArts] = React.useState([]);
@@ -42,23 +39,25 @@ const ArtsScreen = ({ navigation }) => {
   }, [isLoggedIn]);
 
   return isLoggedIn ? (
-    <View>
+    <ScrollView style={styles.scrollView}>
       {arts.map((art, index) => (
-        <View key={index}>
-          <Text>{art.title}</Text>
-          <Text>{art.category}</Text>
-          <Text>{art.description}</Text>
-          <Text>{art.price}</Text>
-          {art.images.map((image, imgIndex) => (
-            <Image
-              key={imgIndex}
-              source={{ uri: `data:image/webp;base64,${image}` }}
-              style={{ width: 200, height: 150 }}
-            />
-          ))}
+        <View key={index} style={styles.artContainer}>
+          <Text style={styles.artTitle}>{art.title}</Text>
+          <Text style={styles.artCategory}>{art.category}</Text>
+          <Text style={styles.artDescription}>{art.description}</Text>
+          <Text style={styles.artPrice}>{art.price}</Text>
+          <Swiper style={styles.wrapper} showsButtons={true}>
+            {art.images.map((image, imgIndex) => (
+              <Image
+                key={imgIndex}
+                source={{ uri: `data:image/webp;base64,${image}` }}
+                style={styles.artImage}
+              />
+            ))}
+          </Swiper>
         </View>
       ))}
-    </View>
+    </ScrollView>
   ) : (
     <LoginPrompt navigation={navigation} />
   );
@@ -84,12 +83,10 @@ const SettingsScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        // Include credentials if needed, e.g., cookies or tokens
-        // credentials: 'include',
       });
 
       if (response.ok) {
-        logout(); // Call the context logout function
+        logout();
         navigation.navigate('Search');
       } else {
         console.error('Failed to log out');
@@ -103,13 +100,12 @@ const SettingsScreen = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text>Settings Content</Text>
-        {/* Add other settings content here */}
       </View>
       <View style={styles.logoutButtonContainer}>
         <CustomButton
           text="Logout"
-          color="#ff6347" // Example color
-          width="80%" // Example width
+          color="#ff6347"
+          width="80%"
           onPress={handleLogout}
         />
       </View>
@@ -164,7 +160,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    zIndex: 1, // Ensure the header is on top
+    zIndex: 1,
   },
   centeredView: {
     flex: 1,
@@ -176,11 +172,45 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   content: {
-    // Add any additional styling for the content here
   },
   logoutButtonContainer: {
-    marginBottom: 20, // Add some margin if needed
+    marginBottom: 20,
     alignItems: 'center',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  artContainer: {
+    marginBottom: 20,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  artTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  artCategory: {
+    fontSize: 16,
+    color: '#666',
+  },
+  artDescription: {
+    fontSize: 14,
+    color: '#333',
+  },
+  artPrice: {
+    fontSize: 16,
+    color: '#000',
+  },
+  wrapper: {
+    height: 250,
+    borderRadius: 10,
+  },
+  artImage: {
+    width: '100%',
+    height: 200,
+    marginVertical: 10,
+    borderRadius: 10,
   },
 });
 

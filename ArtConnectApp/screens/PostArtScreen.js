@@ -3,6 +3,8 @@ import { View, TextInput, Text, StyleSheet, Alert, Image, ScrollView, Platform, 
 import * as ImagePicker from 'expo-image-picker';
 import CustomButton from '../components/CustomButton';
 import { AuthContext } from '../AuthContext';
+import Header from '../components/Header';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PostArtScreen = ({ navigation }) => {
     const { userId } = useContext(AuthContext);
@@ -123,57 +125,60 @@ const PostArtScreen = ({ navigation }) => {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.title}>Post Art</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Title"
-                value={title}
-                onChangeText={setTitle}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Category"
-                value={category}
-                onChangeText={setCategory}
-            />
-            <CustomButton
-                text="Select Images"
-                onPress={selectImage}
-                color="#4682b4"
-                width="100%"
-                disabled={images.length >= 3} // Disable button if 3 images are selected
-            />
-            <View style={styles.imageContainer}>
-                {images.map((image, index) => (
-                    <View key={index} style={styles.imageWrapper}>
-                        <Image source={{ uri: image }} style={styles.image} />
-                        <TouchableOpacity onPress={() => handleRemoveImage(index)} style={styles.removeButton}>
-                            <Text style={styles.removeButtonText}>Remove</Text>
-                        </TouchableOpacity>
+        <SafeAreaView style={{ flex: 1 }}>
+            <Header navigation={navigation} showBackButton={true} />
+                <ScrollView style={styles.container}>
+                    <Text style={styles.title}>Post Art</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Title"
+                        value={title}
+                        onChangeText={setTitle}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Category"
+                        value={category}
+                        onChangeText={setCategory}
+                    />
+                    <CustomButton
+                        text="Select Images"
+                        onPress={selectImage}
+                        color="#4682b4"
+                        width="100%"
+                        disabled={images.length >= 3} // Disable button if 3 images are selected
+                    />
+                    <View style={styles.imageContainer}>
+                        {images.map((image, index) => (
+                            <View key={index} style={styles.imageWrapper}>
+                                <Image source={{ uri: image }} style={styles.image} />
+                                <TouchableOpacity onPress={() => handleRemoveImage(index)} style={styles.removeButton}>
+                                    <Text style={styles.removeButtonText}>Remove</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
                     </View>
-                ))}
-            </View>
-            <TextInput
-                style={styles.input}
-                placeholder="Price"
-                value={price}
-                onChangeText={setPrice}
-                keyboardType="numeric"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Description"
-                value={description}
-                onChangeText={setDescription}
-            />
-            <CustomButton
-                text="Post Art"
-                onPress={handlePostArt}
-                color="#4682b4"
-                width="100%"
-            />
-        </ScrollView>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Price"
+                        value={price}
+                        onChangeText={setPrice}
+                        keyboardType="numeric"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Description"
+                        value={description}
+                        onChangeText={setDescription}
+                    />
+                    <CustomButton
+                        text="Post Art"
+                        onPress={handlePostArt}
+                        color="#4682b4"
+                        width="100%"
+                    />
+                </ScrollView>
+        </SafeAreaView>
     );
 };
 

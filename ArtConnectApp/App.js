@@ -20,8 +20,8 @@ export default function App() {
           <Stack.Screen name="ArtDetails" component={ArtDetailsScreen} />
           <Stack.Screen name="EventDetails" component={EventDetailsScreen} />
           <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="PostArt" component={PostArtScreen} />
-          <Stack.Screen name="PostEvent" component={PostEventScreen} />
+          <Stack.Screen name="PostArt" component={PostArtScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="PostEvent" component={PostEventScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
