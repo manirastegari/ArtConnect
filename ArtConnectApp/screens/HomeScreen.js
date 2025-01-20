@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,9 @@ import Swiper from 'react-native-swiper';
 import Header from '../components/Header';
 import { AuthContext } from '../AuthContext';
 import CustomButton from '../components/CustomButton';
+import * as ImagePicker from 'expo-image-picker';
+import { Alert } from 'react-native';
+import defaultUserImage from '../assets/userImage.png';
 
 const SearchScreen = () => <></>;
 
@@ -24,11 +27,12 @@ const LoginPrompt = ({ navigation }) => (
 );
 
 const ArtsScreen = ({ navigation }) => {
-  const { isLoggedIn } = useContext(AuthContext);
-  const [arts, setArts] = React.useState([]);
-  const [events, setEvents] = React.useState([]);
+  const { isLoggedIn, userId } = useContext(AuthContext);
+  const [arts, setArts] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [userImage, setUserImage] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchArtsAndEvents = async () => {
       try {
         const artsResponse = await fetch('http://192.168.2.27:5001/api/arts');
@@ -38,18 +42,66 @@ const ArtsScreen = ({ navigation }) => {
         const eventsResponse = await fetch('http://192.168.2.27:5001/api/events');
         const eventsData = await eventsResponse.json();
         setEvents(eventsData);
+
+        const userResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
+        const userData = await userResponse.json();
+        setUserImage(userData.image);
       } catch (error) {
-        console.error('Error fetching arts and events:', error);
+        console.error('Error fetching arts, events, or user image:', error);
       }
     };
 
     if (isLoggedIn) {
       fetchArtsAndEvents();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, userId]);
+
+  const selectImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: result.uri,
+        type: 'image/jpeg',
+        name: 'userImage.jpg',
+      });
+
+      try {
+        const response = await fetch(`http://192.168.2.27:5001/api/users/update-image/${userId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setUserImage(data.image);
+          Alert.alert('Success', 'Image updated successfully');
+        } else {
+          Alert.alert('Error', data.error || 'Unknown error');
+        }
+      } catch (error) {
+        // console.error('Error updating image:', error);
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      }
+    }
+  };
 
   return isLoggedIn ? (
     <ScrollView style={styles.scrollView}>
+      <TouchableOpacity onPress={selectImage}>
+        <Image
+          source={userImage ? { uri: `data:image/webp;base64,${userImage}` } : defaultUserImage}
+          style={styles.userImage}
+        />
+      </TouchableOpacity>
       <Text style={styles.sectionHeader}>Posted Arts</Text>
       {arts.map((art, index) => (
         <View key={`art-${index}`} style={styles.artContainer}>
@@ -111,7 +163,29 @@ const FavoritesScreen = ({ navigation }) => {
 };
 
 const SettingsScreen = ({ navigation }) => {
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout, userId } = useContext(AuthContext);
+  const [userDetails, setUserDetails] = useState(null);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setUserDetails(data);
+        } else {
+          Alert.alert('Error', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchUserDetails();
+    }
+  }, [isLoggedIn, userId]);
 
   const handleLogout = async () => {
     try {
@@ -136,7 +210,15 @@ const SettingsScreen = ({ navigation }) => {
   return isLoggedIn ? (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text>Settings Content</Text>
+        {userDetails ? (
+          <>
+            <Text>Name: {userDetails.fullname}</Text>
+            <Text>Email: {userDetails.email}</Text>
+            <Text>User Type: {userDetails.type}</Text>
+          </>
+        ) : (
+          <Text>Loading user details...</Text>
+        )}
       </View>
       <View style={styles.logoutButtonContainer}>
         <CustomButton
@@ -216,6 +298,15 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  userImage: {
+    width: 100,
+    height: 100,
+    borderWidth: 1,
+    borderColor: '#777',
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginVertical: 20,
   },
   artContainer: {
     marginBottom: 20,
