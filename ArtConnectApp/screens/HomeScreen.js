@@ -21,33 +21,65 @@ const LoginPrompt = ({ navigation }) => (
 const ArtsScreen = ({ navigation }) => {
   const { isLoggedIn } = useContext(AuthContext);
   const [arts, setArts] = React.useState([]);
+  const [events, setEvents] = React.useState([]);
 
   React.useEffect(() => {
-    const fetchArts = async () => {
+    const fetchArtsAndEvents = async () => {
       try {
-        const response = await fetch('http://192.168.2.27:5001/api/arts');
-        const data = await response.json();
-        setArts(data);
+        const artsResponse = await fetch('http://192.168.2.27:5001/api/arts');
+        const artsData = await artsResponse.json();
+        setArts(artsData);
+
+        const eventsResponse = await fetch('http://192.168.2.27:5001/api/events');
+        const eventsData = await eventsResponse.json();
+        setEvents(eventsData);
       } catch (error) {
-        console.error('Error fetching arts:', error);
+        console.error('Error fetching arts and events:', error);
       }
     };
 
     if (isLoggedIn) {
-      fetchArts();
+      fetchArtsAndEvents();
     }
   }, [isLoggedIn]);
 
   return isLoggedIn ? (
     <ScrollView style={styles.scrollView}>
+      <Text style={styles.sectionHeader}>Posted Arts</Text>
       {arts.map((art, index) => (
-        <View key={index} style={styles.artContainer}>
-          <Text style={styles.artTitle}>{art.title}</Text>
+        <View key={`art-${index}`} style={styles.artContainer}>
+          <View style={styles.titlePriceContainer}>
+            <Text style={styles.artTitle}>{art.title}</Text>
+            <Text style={styles.artPrice}>$ {art.price}</Text>
+          </View>
           <Text style={styles.artCategory}>{art.category}</Text>
           <Text style={styles.artDescription}>{art.description}</Text>
-          <Text style={styles.artPrice}>{art.price}</Text>
           <Swiper style={styles.wrapper} showsButtons={true}>
             {art.images.map((image, imgIndex) => (
+              <Image
+                key={imgIndex}
+                source={{ uri: `data:image/webp;base64,${image}` }}
+                style={styles.artImage}
+              />
+            ))}
+          </Swiper>
+        </View>
+      ))}
+      <Text style={styles.sectionHeader}>Posted Events</Text>
+      {events.map((event, index) => (
+        <View key={`event-${index}`} style={styles.artContainer}>
+          <View style={styles.titlePriceContainer}>
+            <Text style={styles.artTitle}>{event.title}</Text>
+            <Text style={styles.artPrice}>$ {event.price}</Text>
+          </View>
+          <Text style={styles.artCategory}>{event.category}</Text>
+          <Text style={styles.artDescription}>{event.description}</Text>
+          <View style={styles.dateTimeContainer}>
+            <Text style={styles.artDate}>Date: {new Date(event.date).toLocaleDateString()}</Text>
+            <Text style={styles.artTime}>Time: {event.time}</Text>
+          </View>
+          <Swiper style={styles.wrapper} showsButtons={true}>
+            {event.images.map((image, imgIndex) => (
               <Image
                 key={imgIndex}
                 source={{ uri: `data:image/webp;base64,${image}` }}
@@ -211,6 +243,37 @@ const styles = StyleSheet.create({
     height: 200,
     marginVertical: 10,
     borderRadius: 10,
+  },
+  sectionHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    textAlign: 'center',
+  },
+  titlePriceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  artTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  artPrice: {
+    fontSize: 16,
+    color: '#000',
+  },
+  dateTimeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  artDate: {
+    fontSize: 14,
+    color: '#333',
+  },
+  artTime: {
+    fontSize: 14,
+    color: '#333',
   },
 });
 
