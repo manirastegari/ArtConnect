@@ -112,7 +112,7 @@ const PostArtScreen = ({ navigation }) => {
 
             if (response.ok) {
                 Alert.alert('Success', 'Art posted successfully');
-                navigation.goBack();
+                navigation.navigate('Home', { screen: 'Arts', params: { refresh: true } });
             } else {
                 Alert.alert('Error', data.error || 'Unknown error');
             }
