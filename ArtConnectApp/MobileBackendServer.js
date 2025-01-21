@@ -82,7 +82,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Art' }],
-  type: { type: String, enum: ['Artist', 'Customer'], required: true }
+  type: { type: String, enum: ['Artist', 'Customer'], required: true },
+  image: { type: String, default: '' }
 });
 
 module.exports = mongoose.model('User', userSchema);
@@ -274,10 +275,57 @@ module.exports = router;
 
 
 
-
 const express = require('express');
+const multer = require('multer');
+const sharp = require('sharp');
 const router = express.Router();
 const User = require('../models/User');
+
+// Set up multer for file uploads
+const upload = multer({
+  limits: {
+    fileSize: 150 * 1024 * 1024, // 150MB
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error('Please upload an image'));
+    }
+    cb(undefined, true);
+  },
+});
+
+// Update user image
+// Update user image
+router.post('/update-image/:id', upload.single('image'), async (req, res) => {
+  try {
+    const buffer = await sharp(req.file.buffer)
+      .resize(250, 250) // Smaller size for profile pictures
+      .toFormat('webp')
+      .toBuffer();
+
+    // Reduce quality until the image is under 50 KB
+    let quality = 90;
+    while (buffer.length > 50 * 1024 && quality > 10) {
+      buffer = await sharp(req.file.buffer)
+        .resize(250, 250)
+        .toFormat('webp', { quality })
+        .toBuffer();
+      quality -= 10;
+    }
+
+    // Convert buffer to base64
+    const base64Image = buffer.toString('base64');
+    const user = await User.findByIdAndUpdate(req.params.id, { image: base64Image }, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ message: 'Image updated successfully', image: base64Image });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 // Login user
 router.post('/login', async (req, res) => {
@@ -318,15 +366,15 @@ router.post('/logout', (req, res) => {
 
 // Add this route to your userRoutes
 router.get('/details/:id', async (req, res) => {
-    try {
-      const user = await User.findById(req.params.id).select('fullname email type');
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+  try {
+    const user = await User.findById(req.params.id).select('fullname email type image'); // Include image
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-  });
-  
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

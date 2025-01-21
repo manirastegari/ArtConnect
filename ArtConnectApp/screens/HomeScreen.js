@@ -37,11 +37,15 @@ const ArtsScreen = ({ navigation }) => {
       try {
         const artsResponse = await fetch('http://192.168.2.27:5001/api/arts');
         const artsData = await artsResponse.json();
-        setArts(artsData);
+        // Filter arts by artistID
+        const userArts = artsData.filter(art => art.artistID === userId);
+        setArts(userArts);
 
         const eventsResponse = await fetch('http://192.168.2.27:5001/api/events');
         const eventsData = await eventsResponse.json();
-        setEvents(eventsData);
+        // Filter events by artistID
+        const userEvents = eventsData.filter(event => event.artistID === userId);
+        setEvents(userEvents);
 
         const userResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
         const userData = await userResponse.json();
@@ -64,12 +68,14 @@ const ArtsScreen = ({ navigation }) => {
     });
 
     if (!result.canceled) {
+      console.log('Image URI:', result.assets[0].uri);
       const formData = new FormData();
       formData.append('image', {
-        uri: result.uri,
+        uri: result.assets[0].uri,
         type: 'image/jpeg',
         name: 'userImage.jpg',
       });
+      // formData.append('userId', userId);
 
       try {
         const response = await fetch(`http://192.168.2.27:5001/api/users/update-image/${userId}`, {
@@ -237,6 +243,8 @@ const SettingsScreen = ({ navigation }) => {
 const Tab = createBottomTabNavigator();
 
 const HomeScreen = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerContainer}>
