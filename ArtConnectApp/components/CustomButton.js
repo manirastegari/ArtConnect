@@ -1,13 +1,13 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const CustomButton = ({ onPress, text, color, width, disabled }) => {
+const CustomButton = ({ onPress, text, color, width, disabled, height }) => {
   return (
     <TouchableOpacity
       onPress={disabled ? null : onPress} // Disable onPress if the button is disabled
       style={[
         styles.button,
-        { backgroundColor: disabled ? '#ccc' : color, width: width }, // Change color if disabled
+        { backgroundColor: disabled ? '#ccc' : color, width: width, height: height }, // Change color if disabled
         disabled && styles.disabledButton, // Apply additional styles if disabled
       ]}
       activeOpacity={disabled ? 1 : 0.7} // Prevent opacity change if disabled
