@@ -110,7 +110,7 @@ module.exports = mongoose.model('User', userSchema);
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
-const router = express.Router();
+// const router = express.Router();
 const Art = require('../models/Art');
 
 // Set up multer for file uploads
@@ -195,7 +195,7 @@ module.exports = router;
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
-const router = express.Router();
+// const router = express.Router();
 const Event = require('../models/Event');
 
 // Set up multer for file uploads

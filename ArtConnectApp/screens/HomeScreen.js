@@ -10,8 +10,8 @@ import CustomButton from '../components/CustomButton';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import defaultUserImage from '../assets/userImage.png';
+import SearchScreen from './SearchScreen';
 
-const SearchScreen = () => <></>;
 
 // Dummy components for each tab
 const LoginPrompt = ({ navigation }) => (
