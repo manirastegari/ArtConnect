@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, FlatList, StyleSheet, Text, Button } from 'react-native';
+import { View, TextInput, FlatList, StyleSheet, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import ItemCard from '../components/ItemCard';
+import CustomButton from '../components/CustomButton';
 
 const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,24 +66,31 @@ const SearchScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Text style={styles.categoryLabel}>Category</Text>
-        <Picker
-          selectedValue={selectedCategory}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-        >
-          <Picker.Item label="All Categories" value="" />
-          {categories.map((category, index) => (
-            <Picker.Item key={index} label={category} value={category} />
-          ))}
-        </Picker>
         <TextInput
           style={styles.searchInput}
           placeholder="Search..."
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        <Button title="Search" onPress={handleSearch} />
+        <CustomButton
+          text="Search"
+          onPress={handleSearch}
+          color="#4682b4"
+          width="18%"
+          height={49}
+        />
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedCategory}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+          >
+            <Picker.Item label="All Categories" value="" />
+            {categories.map((category, index) => (
+              <Picker.Item key={index} label={category} value={category} />
+            ))}
+          </Picker>
+        </View>
       </View>
       <Text style={styles.sectionHeader}>Arts</Text>
       <FlatList
@@ -126,21 +134,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
   },
-  categoryLabel: {
-    marginRight: 5,
-    fontSize: 16,
-  },
-  picker: {
-    flex: 1,
-    height: 40,
-  },
   searchInput: {
-    flex: 2,
-    height: 40,
+    flex: 1,
+    height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
+    borderRadius: 5,
     marginHorizontal: 5,
     paddingHorizontal: 8,
+  },
+  pickerContainer: {
+    flex: 1,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    justifyContent: 'center',
+    backgroundColor: '#4682b4', // Custom background color similar to CustomButton
+    overflow: 'hidden', // Ensures the Picker fits within the styled container
+    marginLeft: 4
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    color: '#fff', // Text color to match the button style
   },
   sectionHeader: {
     fontSize: 20,
