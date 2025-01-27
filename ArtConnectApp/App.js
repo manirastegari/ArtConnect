@@ -17,8 +17,8 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ArtDetails" component={ArtDetailsScreen} />
-          <Stack.Screen name="EventDetails" component={EventDetailsScreen} />
+          <Stack.Screen name="ArtDetails" component={ArtDetailsScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="EventDetails" component={EventDetailsScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
           <Stack.Screen name="PostArt" component={PostArtScreen} options={{ headerShown: false }} />
           <Stack.Screen name="PostEvent" component={PostEventScreen} options={{ headerShown: false }} />

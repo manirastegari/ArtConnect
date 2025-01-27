@@ -1,16 +1,16 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-const ItemCard = ({ image, title, category, price }) => {
+const ItemCard = ({ image, title, category, price, onPress }) => {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity onPress={onPress} style={styles.card}>
       <Image source={{ uri: `data:image/webp;base64,${image}` }} style={styles.image} />
       <Text style={styles.title}>{title}</Text>
       <View style={styles.infoContainer}>
         <Text style={styles.category}>{category}</Text>
         <Text style={styles.price}>${price}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flex: 1,
     margin: 4,
-    // padding: 8,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
