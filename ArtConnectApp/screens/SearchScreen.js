@@ -3,6 +3,7 @@ import { View, TextInput, FlatList, StyleSheet, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import ItemCard from '../components/ItemCard';
 import CustomButton from '../components/CustomButton';
+import { useNavigation } from '@react-navigation/native';
 
 const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -12,6 +13,8 @@ const SearchScreen = () => {
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,6 +106,7 @@ const SearchScreen = () => {
             title={item.title}
             category={item.category}
             price={item.price}
+            onPress={() => navigation.navigate('ArtDetails', { artId: item._id })}
           />
         )}
       />
@@ -117,6 +121,7 @@ const SearchScreen = () => {
             title={item.title}
             category={item.category}
             price={item.price}
+            onPress={() => navigation.navigate('EventDetails', { eventId: item._id })}
           />
         )}
       />
@@ -150,14 +155,14 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     justifyContent: 'center',
-    backgroundColor: '#4682b4', // Custom background color similar to CustomButton
-    overflow: 'hidden', // Ensures the Picker fits within the styled container
+    backgroundColor: '#4682b4',
+    overflow: 'hidden',
     marginLeft: 4
   },
   picker: {
     height: 50,
     width: '100%',
-    color: '#fff', // Text color to match the button style
+    color: '#fff',
   },
   sectionHeader: {
     fontSize: 20,
