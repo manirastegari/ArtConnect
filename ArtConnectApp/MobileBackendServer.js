@@ -264,7 +264,6 @@ router.post('/', upload.array('images', 3), async (req, res) => {
 
 module.exports = router;
 
-
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
@@ -362,6 +361,30 @@ router.get('/details/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Toggle favorite art
+router.post('/toggle-favorite/:userId/:artId', async (req, res) => {
+  try {
+    const { userId, artId } = req.params;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isFavorite = user.favorites.includes(artId);
+    if (isFavorite) {
+      user.favorites.pull(artId);
+    } else {
+      user.favorites.push(artId);
+    }
+
+    await user.save();
+    res.status(200).json({ message: 'Favorites updated successfully', favorites: user.favorites });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

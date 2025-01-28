@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Swiper from 'react-native-swiper';
 import Header from '../components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { AuthContext } from '../AuthContext';
 
 const ArtDetailsScreen = ({ route, navigation }) => {
   const { artId } = route.params;
+  const { userId } = useContext(AuthContext);
   const [artDetails, setArtDetails] = useState(null);
   const [artistDetails, setArtistDetails] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -27,6 +31,12 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         }
         const artistData = await artistResponse.json();
         setArtistDetails(artistData);
+
+        // Check if the art is in user's favorites
+        const userResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
+        const userData = await userResponse.json();
+        const userFavorites = userData.favorites || [];
+        setIsFavorite(userFavorites.includes(artId));
       } catch (error) {
         console.error('Error fetching art details:', error);
         setError(error.message);
@@ -34,7 +44,23 @@ const ArtDetailsScreen = ({ route, navigation }) => {
     };
 
     fetchArtDetails();
-  }, [artId]);
+  }, [artId, userId]);
+
+  const toggleFavorite = async () => {
+    try {
+      const response = await fetch(`http://192.168.2.27:5001/api/users/toggle-favorite/${userId}/${artId}`, {
+        method: 'POST',
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setIsFavorite(!isFavorite);
+      } else {
+        console.error('Error updating favorites:', data.error);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
 
   if (error) {
     return <Text>Error: {error}</Text>;
@@ -48,7 +74,16 @@ const ArtDetailsScreen = ({ route, navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Header navigation={navigation} showBackButton={true} />
-        <Text style={styles.title}>{artDetails.title || 'Untitled'}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{artDetails.title || 'Untitled'}</Text>
+          <TouchableOpacity onPress={toggleFavorite}>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={24}
+              color={isFavorite ? 'red' : 'gray'}
+            />
+          </TouchableOpacity>
+        </View>
         <View style={styles.swiperContainer}>
           <Swiper showsButtons={true}>
             {artDetails.images.map((image, index) => (
@@ -85,11 +120,16 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
   },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 10,
   },
   swiperContainer: {
     height: 220,
