@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Swiper from 'react-native-swiper';
 import Header from '../components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { AuthContext } from '../AuthContext';
 
-const EventDetailsScreen = ({ route, navigation }) => { // Add navigation prop
+const EventDetailsScreen = ({ route, navigation }) => {
   const { eventId } = route.params;
+  const { userId } = useContext(AuthContext);
   const [eventDetails, setEventDetails] = useState(null);
-  const [artistDetails, setArtistDetails] = useState(null); // Add state for artist details
+  const [artistDetails, setArtistDetails] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -27,6 +31,12 @@ const EventDetailsScreen = ({ route, navigation }) => { // Add navigation prop
         }
         const artistData = await artistResponse.json();
         setArtistDetails(artistData);
+
+        // Check if the event is in user's favorites
+        const userResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
+        const userData = await userResponse.json();
+        const userFavorites = userData.favorites || [];
+        setIsFavorite(userFavorites.includes(eventId));
       } catch (error) {
         console.error('Error fetching event details:', error);
         setError(error.message);
@@ -34,7 +44,33 @@ const EventDetailsScreen = ({ route, navigation }) => { // Add navigation prop
     };
 
     fetchEventDetails();
-  }, [eventId]);
+  }, [eventId, userId]);
+
+  const toggleFavorite = async () => {
+    try {
+      const response = await fetch(`http://192.168.2.27:5001/api/users/toggle-favorite/${userId}/${eventId}`, {
+        method: 'POST',
+      });
+
+      const contentType = response.headers.get('content-type');
+      let data;
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error('Unexpected response format:', text);
+        throw new Error('Unexpected response format');
+      }
+
+      if (response.ok) {
+        setIsFavorite(!isFavorite);
+      } else {
+        console.error('Error updating favorites:', data.error);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
 
   if (error) {
     return <Text>Error: {error}</Text>;
@@ -48,7 +84,16 @@ const EventDetailsScreen = ({ route, navigation }) => { // Add navigation prop
     <SafeAreaView style={{ flex: 1 }}>
       <Header navigation={navigation} showBackButton={true} />
       <View style={styles.container}>
-        <Text style={styles.title}>{eventDetails.title}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{eventDetails.title}</Text>
+          <TouchableOpacity onPress={toggleFavorite}>
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={24}
+              color={isFavorite ? 'red' : 'gray'}
+            />
+          </TouchableOpacity>
+        </View>
         <View style={styles.swiperContainer}>
           <Swiper showsButtons={true}>
             {eventDetails.images.map((image, index) => (
@@ -87,6 +132,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#fff',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
   },
   title: {
     fontSize: 24,
