@@ -1,6 +1,3 @@
-// Sample Code - all in one file - Not runing the app with these - use the Zip file ArtConnectBackend to start backend.
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -39,8 +36,6 @@ const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
-
-
 const mongoose = require('mongoose');
 
 const artSchema = new mongoose.Schema({
@@ -53,8 +48,6 @@ const artSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Art', artSchema);
-
-
 
 
 const mongoose = require('mongoose');
@@ -74,7 +67,6 @@ module.exports = mongoose.model('Event', eventSchema);
 
 
 
-
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -89,28 +81,10 @@ const userSchema = new mongoose.Schema({
 module.exports = mongoose.model('User', userSchema);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
-// const router = express.Router();
+const router = express.Router();
 const Art = require('../models/Art');
 
 // Set up multer for file uploads
@@ -182,20 +156,26 @@ router.get('/', async (req, res) => {
     }
   });
 
+  // send art details to screen
+  router.get('/:id', async (req, res) => {
+    try {
+      const art = await Art.findById(req.params.id);
+      if (!art) {
+        return res.status(404).json({ error: 'Art not found' });
+      }
+      res.json(art);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 module.exports = router;
-
-
-
-
-
-
-
 
 
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
-// const router = express.Router();
+const router = express.Router();
 const Event = require('../models/Event');
 
 // Set up multer for file uploads
@@ -269,10 +249,20 @@ router.post('/', upload.array('images', 3), async (req, res) => {
     }
   });
 
+  // send event details to screen
+  router.get('/:id', async (req, res) => {
+    try {
+      const event = await Event.findById(req.params.id);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
+      res.json(event);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 module.exports = router;
-
-
-
 
 
 const express = require('express');
