@@ -14,6 +14,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 
+  
   useEffect(() => {
     const fetchArtDetails = async () => {
       try {
