@@ -269,6 +269,8 @@ const multer = require('multer');
 const sharp = require('sharp');
 const router = express.Router();
 const User = require('../models/User');
+const Art = require('../models/Art');
+const Event = require('../models/Event');
 
 // Set up multer for file uploads
 const upload = multer({
@@ -283,7 +285,6 @@ const upload = multer({
   },
 });
 
-// Update user image
 // Update user image
 router.post('/update-image/:id', upload.single('image'), async (req, res) => {
   try {
@@ -345,7 +346,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-
 // Logout user
 router.post('/logout', (req, res) => {
   // Implement token/session invalidation logic here
@@ -353,10 +353,10 @@ router.post('/logout', (req, res) => {
   res.status(200).json({ message: 'Logout successful' });
 });
 
-// Add this route to your userRoutes
+// Get user details
 router.get('/details/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('fullname email type image'); // Include image
+    const user = await User.findById(req.params.id).select('fullname email type image favorites'); // Include favorites
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -385,6 +385,24 @@ router.post('/toggle-favorite/:userId/:artId', async (req, res) => {
 
     await user.save();
     res.status(200).json({ message: 'Favorites updated successfully', favorites: user.favorites });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Fetch user's favorite arts and events
+router.get('/favorites/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const favoriteArts = await Art.find({ _id: { $in: user.favorites } });
+
+    const favoriteEvents = await Event.find({ _id: { $in: user.favorites } });
+
+    res.json({ arts: favoriteArts, events: favoriteEvents });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

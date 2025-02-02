@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity, FlatList } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,7 +11,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import defaultUserImage from '../assets/userImage.png';
 import SearchScreen from './SearchScreen';
-
+import ItemCard from '../components/ItemCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 // Dummy components for each tab
 const LoginPrompt = ({ navigation }) => (
@@ -164,8 +165,87 @@ const EventsScreen = ({ navigation }) => {
 };
 
 const FavoritesScreen = ({ navigation }) => {
-  const { isLoggedIn } = useContext(AuthContext);
-  return isLoggedIn ? <View><Text>Favorites Content</Text></View> : <LoginPrompt navigation={navigation} />;
+  const { isLoggedIn, userId } = useContext(AuthContext);
+  const [favorites, setFavorites] = useState({ arts: [], events: [] });
+  const [loading, setLoading] = useState(true);
+
+  const fetchFavorites = async () => {
+    try {
+      const response = await fetch(`http://192.168.2.27:5001/api/users/favorites/${userId}`);
+      const data = await response.json();
+      if (response.ok) {
+        setFavorites(data);
+      } else {
+        console.error('Error fetching favorites:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isLoggedIn) {
+        setLoading(true);
+        fetchFavorites();
+      }
+    }, [isLoggedIn, userId])
+  );
+
+  if (!isLoggedIn) {
+    return <LoginPrompt navigation={navigation} />;
+  }
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  const { arts, events } = favorites;
+
+  const renderArtItem = ({ item }) => (
+    <ItemCard
+      image={item.images[0]} // Assuming the first image is used for display
+      title={item.title}
+      category={item.category}
+      price={item.price}
+      onPress={() => navigation.navigate('ArtDetails', { artId: item._id })}
+    />
+  );
+
+  const renderEventItem = ({ item }) => (
+    <ItemCard
+      image={item.images[0]} // Assuming the first image is used for display
+      title={item.title}
+      category={item.category}
+      price={item.price}
+      onPress={() => navigation.navigate('EventDetails', { eventId: item._id })}
+    />
+  );
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.sectionHeader}>Favorite Arts</Text>
+      <FlatList
+        data={arts}
+        renderItem={renderArtItem}
+        keyExtractor={(item) => item._id}
+        numColumns={2}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={<Text style={styles.noFavoritesText}>No favorite arts found.</Text>}
+      />
+      <Text style={styles.sectionHeader}>Favorite Events</Text>
+      <FlatList
+        data={events}
+        renderItem={renderEventItem}
+        keyExtractor={(item) => item._id}
+        numColumns={2}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={<Text style={styles.noFavoritesText}>No favorite events found.</Text>}
+      />
+    </View>
+  );
 };
 
 const SettingsScreen = ({ navigation }) => {
@@ -378,6 +458,20 @@ const styles = StyleSheet.create({
   artTime: {
     fontSize: 14,
     color: '#333',
+  },
+  listContainer: {
+    padding: 5,
+  },
+  sectionHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 5,
+    textAlign: 'center',
+  },
+  noFavoritesText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
   },
 });
 

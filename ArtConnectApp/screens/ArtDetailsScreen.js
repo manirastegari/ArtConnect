@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
+import { Alert } from 'react-native';
 
 const ArtDetailsScreen = ({ route, navigation }) => {
   const { artId } = route.params;
@@ -14,7 +15,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 
-  
+
   useEffect(() => {
     const fetchArtDetails = async () => {
       try {
@@ -37,6 +38,12 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         const userResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
         const userData = await userResponse.json();
         const userFavorites = userData.favorites || [];
+
+        // Debugging logs
+        console.log('User Favorites:', userFavorites);
+        console.log('Current Art ID:', artId);
+        console.log('Is Favorite:', userFavorites.includes(artId));
+        
         setIsFavorite(userFavorites.includes(artId));
       } catch (error) {
         console.error('Error fetching art details:', error);
@@ -48,6 +55,11 @@ const ArtDetailsScreen = ({ route, navigation }) => {
   }, [artId, userId]);
 
   const toggleFavorite = async () => {
+    if (!userId) {
+      Alert.alert('Login Required', 'You need to log in to add items to your favorites list.');
+      return;
+    }
+  
     try {
       const response = await fetch(`http://192.168.2.27:5001/api/users/toggle-favorite/${userId}/${artId}`, {
         method: 'POST',
