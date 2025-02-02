@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
+import { Alert } from 'react-native';
 
 const EventDetailsScreen = ({ route, navigation }) => {
   const { eventId } = route.params;
@@ -47,11 +48,16 @@ const EventDetailsScreen = ({ route, navigation }) => {
   }, [eventId, userId]);
 
   const toggleFavorite = async () => {
+    if (!userId) {
+      Alert.alert('Login Required', 'You need to log in to add items to your favorites list.');
+      return;
+    }
+  
     try {
       const response = await fetch(`http://192.168.2.27:5001/api/users/toggle-favorite/${userId}/${eventId}`, {
         method: 'POST',
       });
-
+  
       const contentType = response.headers.get('content-type');
       let data;
       if (contentType && contentType.includes('application/json')) {
@@ -61,7 +67,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
         console.error('Unexpected response format:', text);
         throw new Error('Unexpected response format');
       }
-
+  
       if (response.ok) {
         setIsFavorite(!isFavorite);
       } else {
