@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert, Switch } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthContext } from '../AuthContext'; // Import AuthContext
+import { AuthContext } from '../AuthContext';
+import config from '../config';
 
 const LoginScreen = ({ navigation }) => {
-  const { login } = useContext(AuthContext); // Destructure login from AuthContext
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [saveCredentials, setSaveCredentials] = useState(false);
@@ -29,7 +30,7 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://192.168.2.27:5001/api/users/login', {
+      const response = await fetch(`${config.API_BASE_URL}/api/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

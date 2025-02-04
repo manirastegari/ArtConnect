@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
 import { Alert } from 'react-native';
+import config from '../config';
 
 const EventDetailsScreen = ({ route, navigation }) => {
   const { eventId } = route.params;
@@ -54,7 +55,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
     }
   
     try {
-      const response = await fetch(`http://192.168.2.27:5001/api/users/toggle-favorite/${userId}/${eventId}`, {
+      const response = await fetch(`${config.API_BASE_URL}/api/users/toggle-favorite/${userId}/${eventId}`, {
         method: 'POST',
       });
   

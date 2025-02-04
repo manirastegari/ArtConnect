@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   artText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4682b4', // Example color for "Art"
+    color: '#4682b4',
   },
   connectText: {
     fontSize: 24,
@@ -103,19 +103,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   c: {
-    color: '#ff6347', // Example color for 'C'
+    color: '#ff6347',
   },
   o: {
-    color: '#ffa500', // Example color for 'o'
+    color: '#ffa500',
   },
   n: {
-    color: '#32cd32', // Example color for 'n'
+    color: '#32cd32',
   },
   e: {
-    color: '#1e90ff', // Example color for 'e'
+    color: '#1e90ff',
   },
   t: {
-    color: '#8a2be2', // Example color for 't'
+    color: '#8a2be2',
   },
   rightContainer: {
     flexDirection: 'row',

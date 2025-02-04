@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import ItemCard from '../components/ItemCard';
 import CustomButton from '../components/CustomButton';
 import { useNavigation } from '@react-navigation/native';
+import config from '../config';
 
 const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,12 +20,12 @@ const SearchScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const artsResponse = await fetch('http://192.168.2.27:5001/api/arts');
+        const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts`);
         const artsData = await artsResponse.json();
         setArts(artsData);
         setFilteredArts(artsData);
 
-        const eventsResponse = await fetch('http://192.168.2.27:5001/api/events');
+        const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events`);
         const eventsData = await eventsResponse.json();
         setEvents(eventsData);
         setFilteredEvents(eventsData);

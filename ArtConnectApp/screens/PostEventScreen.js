@@ -6,6 +6,7 @@ import CustomButton from '../components/CustomButton';
 import { AuthContext } from '../AuthContext';
 import Header from '../components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import config from '../config';
 
 const PostEventScreen = ({ navigation }) => {
   const { userId } = useContext(AuthContext);
@@ -101,7 +102,7 @@ const PostEventScreen = ({ navigation }) => {
         });
       });
 
-      const response = await fetch('http://192.168.2.27:5001/api/events', {
+      const response = await fetch(`${config.API_BASE_URL}/api/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',

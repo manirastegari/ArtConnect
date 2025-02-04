@@ -13,6 +13,7 @@ import defaultUserImage from '../assets/userImage.png';
 import SearchScreen from './SearchScreen';
 import ItemCard from '../components/ItemCard';
 import { useFocusEffect } from '@react-navigation/native';
+import config from '../config';
 
 // Dummy components for each tab
 const LoginPrompt = ({ navigation }) => (
@@ -36,19 +37,19 @@ const ArtsScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchArtsAndEvents = async () => {
       try {
-        const artsResponse = await fetch('http://192.168.2.27:5001/api/arts');
+        const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts`);
         const artsData = await artsResponse.json();
         // Filter arts by artistID
         const userArts = artsData.filter(art => art.artistID === userId);
         setArts(userArts);
 
-        const eventsResponse = await fetch('http://192.168.2.27:5001/api/events');
+        const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events`);
         const eventsData = await eventsResponse.json();
         // Filter events by artistID
         const userEvents = eventsData.filter(event => event.artistID === userId);
         setEvents(userEvents);
 
-        const userResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
+        const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
         setUserImage(userData.image);
       } catch (error) {
@@ -79,7 +80,7 @@ const ArtsScreen = ({ navigation }) => {
       // formData.append('userId', userId);
 
       try {
-        const response = await fetch(`http://192.168.2.27:5001/api/users/update-image/${userId}`, {
+        const response = await fetch(`${config.API_BASE_URL}/api/users/update-image/${userId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -171,7 +172,7 @@ const FavoritesScreen = ({ navigation }) => {
 
   const fetchFavorites = async () => {
     try {
-      const response = await fetch(`http://192.168.2.27:5001/api/users/favorites/${userId}`);
+      const response = await fetch(`${config.API_BASE_URL}/api/users/favorites/${userId}`);
       const data = await response.json();
       if (response.ok) {
         setFavorites(data);
@@ -206,7 +207,7 @@ const FavoritesScreen = ({ navigation }) => {
 
   const renderArtItem = ({ item }) => (
     <ItemCard
-      image={item.images[0]} // Assuming the first image is used for display
+      image={item.images[0]}
       title={item.title}
       category={item.category}
       price={item.price}
@@ -216,7 +217,7 @@ const FavoritesScreen = ({ navigation }) => {
 
   const renderEventItem = ({ item }) => (
     <ItemCard
-      image={item.images[0]} // Assuming the first image is used for display
+      image={item.images[0]}
       title={item.title}
       category={item.category}
       price={item.price}
@@ -255,7 +256,7 @@ const SettingsScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
+        const response = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const data = await response.json();
         if (response.ok) {
           setUserDetails(data);
@@ -275,7 +276,7 @@ const SettingsScreen = ({ navigation }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://192.168.2.27:5001/api/users/logout', {
+      const response = await fetch(`${config.API_BASE_URL}/api/users/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

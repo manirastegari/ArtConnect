@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import config from '../config';
 
 const RegisterScreen = ({ navigation }) => {
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [userType, setUserType] = useState('Artist'); // Default to 'Artist'
+  const [userType, setUserType] = useState('Artist');
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -16,7 +17,7 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     try {
-        const response = await fetch('http://192.168.2.27:5001/api/users/register', {
+        const response = await fetch(`${config.API_BASE_URL}/api/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +34,7 @@ const RegisterScreen = ({ navigation }) => {
 
       if (response.ok) {
         Alert.alert('Success', data.message);
-        navigation.navigate('Login'); // Navigate to login screen after successful registration
+        navigation.navigate('Login');
       } else {
         Alert.alert('Error', data.error);
       }
