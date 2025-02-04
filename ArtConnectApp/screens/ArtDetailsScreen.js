@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
 import { Alert } from 'react-native';
+import config from '../config';
 
 const ArtDetailsScreen = ({ route, navigation }) => {
   const { artId } = route.params;
@@ -19,7 +20,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchArtDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.2.27:5001/api/arts/${artId}`);
+        const response = await fetch(`${config.API_BASE_URL}/api/arts/${artId}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -27,7 +28,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         setArtDetails(data);
 
         // Fetch artist details
-        const artistResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${data.artistID}`);
+        const artistResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${data.artistID}`);
         if (!artistResponse.ok) {
           throw new Error(`HTTP error! status: ${artistResponse.status}`);
         }
@@ -35,7 +36,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         setArtistDetails(artistData);
 
         // Check if the art is in user's favorites
-        const userResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
+        const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
         const userFavorites = userData.favorites || [];
 
@@ -43,7 +44,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         console.log('User Favorites:', userFavorites);
         console.log('Current Art ID:', artId);
         console.log('Is Favorite:', userFavorites.includes(artId));
-        
+
         setIsFavorite(userFavorites.includes(artId));
       } catch (error) {
         console.error('Error fetching art details:', error);
@@ -61,7 +62,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
     }
   
     try {
-      const response = await fetch(`http://192.168.2.27:5001/api/users/toggle-favorite/${userId}/${artId}`, {
+      const response = await fetch(`${config.API_BASE_URL}/api/users/toggle-favorite/${userId}/${artId}`, {
         method: 'POST',
       });
       const data = await response.json();

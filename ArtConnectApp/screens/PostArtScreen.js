@@ -5,6 +5,7 @@ import CustomButton from '../components/CustomButton';
 import { AuthContext } from '../AuthContext';
 import Header from '../components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import config from '../config';
 
 const PostArtScreen = ({ navigation }) => {
     const { userId } = useContext(AuthContext);
@@ -85,17 +86,17 @@ const PostArtScreen = ({ navigation }) => {
             formData.append('category', category);
             formData.append('price', parseFloat(price));
             formData.append('description', description);
-            formData.append('artistID', userId); // Replace with actual artist ID
+            formData.append('artistID', userId);
 
             images.forEach((imageUri, index) => {
                 formData.append('images', {
                     uri: imageUri,
-                    type: 'image/jpeg', // or 'image/png'
+                    type: 'image/jpeg',
                     name: `image${index}.jpg`
                 });
             });
 
-            const response = await fetch('http://192.168.2.27:5001/api/arts', {
+            const response = await fetch(`${config.API_BASE_URL}/api/arts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -146,7 +147,7 @@ const PostArtScreen = ({ navigation }) => {
                         onPress={selectImage}
                         color="#4682b4"
                         width="100%"
-                        disabled={images.length >= 3} // Disable button if 3 images are selected
+                        disabled={images.length >= 3}
                     />
                     <View style={styles.imageContainer}>
                         {images.map((image, index) => (
