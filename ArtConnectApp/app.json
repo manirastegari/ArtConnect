@@ -24,10 +24,16 @@
         "CAMERA",
         "WRITE_EXTERNAL_STORAGE",
         "READ_EXTERNAL_STORAGE"
-      ]
+      ],
+      "package": "com.mani.rastegari.ArtConnectApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9a679df3-9b56-471f-82b0-77a6f573f882"
+      }
     }
   }
 }

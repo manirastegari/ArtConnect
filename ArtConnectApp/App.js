@@ -9,6 +9,14 @@ import AuthScreen from './screens/AuthScreen';
 import PostArtScreen from './screens/PostArtScreen';
 import PostEventScreen from './screens/PostEventScreen';
 
+// Import App Center modules
+import AppCenter from 'appcenter';
+import AppCenterAnalytics from 'appcenter-analytics';
+import AppCenterCrashes from 'appcenter-crashes';
+
+// Initialize App Center
+AppCenter.start("568d8f1e-876f-465f-b6d5-1de31a00b810", AppCenterAnalytics, AppCenterCrashes);
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -26,4 +34,5 @@ export default function App() {
       </NavigationContainer>
     </AuthProvider>
   );
+  
 }

@@ -8,8 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted  # Use the self-hosted runner
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -45,9 +44,8 @@ jobs:
         xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphoneos -configuration AppStoreDistribution archive -archivePath $PWD/build/YourApp.xcarchive
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Use the self-hosted runner
     needs: build
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
