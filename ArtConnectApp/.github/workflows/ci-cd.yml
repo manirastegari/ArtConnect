@@ -1,4 +1,3 @@
-name: CI/CD for React Native App
 
 on:
   push:
@@ -18,6 +17,14 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16'
+
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
     - name: Install dependencies
       run: yarn install
@@ -44,6 +51,26 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Deploy to App Center
-      run: echo "Deploying to App Center..."
-      # Add your deployment steps here
+    - name: Install App Center CLI
+      run: npm install -g appcenter-cli
+
+    - name: Deploy Android to App Center
+      env:
+        APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
+      run: |
+        appcenter distribute release \
+          --app YourAppName/YourAndroidApp \
+          --file android/app/build/outputs/apk/release/app-release.apk \
+          --group Collaborators \
+          --token $APPCENTER_TOKEN
+
+    - name: Deploy iOS to App Center
+      if: runner.os == 'macOS'
+      env:
+        APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
+      run: |
+        appcenter distribute release \
+          --app YourAppName/YouriOSApp \
+          --file ios/build/YourApp.xcarchive/Products/Applications/YourApp.app \
+          --group Collaborators \
+          --token $APPCENTER_TOKEN
