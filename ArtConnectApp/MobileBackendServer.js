@@ -35,7 +35,6 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-
 const mongoose = require('mongoose');
 
 const artSchema = new mongoose.Schema({
@@ -48,7 +47,6 @@ const artSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Art', artSchema);
-
 
 const mongoose = require('mongoose');
 
@@ -65,8 +63,6 @@ const eventSchema = new mongoose.Schema({
 
 module.exports = mongoose.model('Event', eventSchema);
 
-
-
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -79,7 +75,6 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('User', userSchema);
-
 
 const express = require('express');
 const multer = require('multer');
@@ -170,7 +165,6 @@ router.get('/', async (req, res) => {
   });
 
 module.exports = router;
-
 
 const express = require('express');
 const multer = require('multer');
