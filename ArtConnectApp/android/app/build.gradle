@@ -103,7 +103,7 @@ android {
         }
         release {
             // Update these values with your keystore information
-            storeFile file('../my-release-key.jks') 
+            storeFile file('../../my-release-key.jks') 
             storePassword '909090'  
             keyAlias 'my-key-alias' 
             keyPassword '909090'    
