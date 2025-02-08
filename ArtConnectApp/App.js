@@ -10,14 +10,14 @@ import PostArtScreen from './screens/PostArtScreen';
 import PostEventScreen from './screens/PostEventScreen';
 
 // Import App Center modules
-import AppCenter from 'appcenter';
-import AppCenterAnalytics from 'appcenter-analytics';
-import AppCenterCrashes from 'appcenter-crashes';
+// import AppCenter from 'appcenter';
+// import AppCenterAnalytics from 'appcenter-analytics';
+// import AppCenterCrashes from 'appcenter-crashes';
 
-console.log('AppCenter:', AppCenter);
+// console.log('AppCenter:', AppCenter);
 
-// Initialize App Center
-AppCenter.start("568d8f1e-876f-465f-b6d5-1de31a00b810", AppCenterAnalytics, AppCenterCrashes);
+// // Initialize App Center
+// AppCenter.start("568d8f1e-876f-465f-b6d5-1de31a00b810", AppCenterAnalytics, AppCenterCrashes);
 
 const Stack = createStackNavigator();
 
