@@ -86,13 +86,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.artconnectapp"
+    namespace 'com.mani.rastegari.ArtConnectApp'
     defaultConfig {
-        applicationId "com.artconnectapp"
+        applicationId 'com.mani.rastegari.ArtConnectApp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
     signingConfigs {
         debug {
@@ -173,4 +173,5 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    
 }

@@ -16,6 +16,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 
+  
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
