@@ -3,6 +3,7 @@ import { View, TextInput, Button, Text, StyleSheet, Alert, Switch } from 'react-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../AuthContext';
 import config from '../config';
+import PagerView from 'react-native-pager-view';
 
 const LoginScreen = ({ navigation }) => {
   const { login } = useContext(AuthContext);
@@ -42,7 +43,7 @@ const LoginScreen = ({ navigation }) => {
   
       if (response.ok) {
         Alert.alert('Success', 'Logged in successfully');
-        login(data.userId); // Pass the user ID to the login function
+        login(data.userId);
         if (saveCredentials) {
           await AsyncStorage.setItem('userEmail', email);
           await AsyncStorage.setItem('userPassword', password);
@@ -61,34 +62,39 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <View style={styles.switchContainer}>
-        <Text>Save Credentials</Text>
-        <Switch
-          value={saveCredentials}
-          onValueChange={setSaveCredentials}
+    <PagerView style={styles.pagerView} initialPage={0}>
+      <View key="1" style={styles.container}>
+        <Text style={styles.title}>Login</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
         />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        <View style={styles.switchContainer}>
+          <Text>Save Credentials</Text>
+          <Switch
+            value={saveCredentials}
+            onValueChange={setSaveCredentials}
+          />
+        </View>
+        <Button title="Login" onPress={handleLogin} />
       </View>
-      <Button title="Login" onPress={handleLogin} />
-    </View>
+    </PagerView>
   );
 };
 
 const styles = StyleSheet.create({
+  pagerView: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

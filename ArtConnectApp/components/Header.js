@@ -8,10 +8,14 @@ const Header = ({ navigation, showBackButton }) => {
   const { isLoggedIn } = useContext(AuthContext);
 
   const handleProfilePress = () => {
-    if (isLoggedIn) {
-      navigation.navigate('Home', { screen: 'Settings' });
-    } else {
-      navigation.navigate('Auth', { screen: 'Login' });
+    try {
+      if (isLoggedIn) {
+        navigation.navigate('Home', { screen: 'Settings' });
+      } else {
+        navigation.navigate('Auth', { screen: 'Login' });
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
     }
   };
 
