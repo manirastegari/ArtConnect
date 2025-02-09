@@ -16,11 +16,11 @@ const EventDetailsScreen = ({ route, navigation }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState(null);
 
-  
+
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.2.27:5001/api/events/${eventId}`);
+        const response = await fetch(`${config.API_BASE_URL}/api/events/${eventId}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -28,7 +28,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
         setEventDetails(data);
 
         // Fetch artist details
-        const artistResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${data.artistID}`);
+        const artistResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${data.artistID}`);
         if (!artistResponse.ok) {
           throw new Error(`HTTP error! status: ${artistResponse.status}`);
         }
@@ -36,7 +36,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
         setArtistDetails(artistData);
 
         // Check if the event is in user's favorites
-        const userResponse = await fetch(`http://192.168.2.27:5001/api/users/details/${userId}`);
+        const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
         const userFavorites = userData.favorites || [];
         setIsFavorite(userFavorites.includes(eventId));
