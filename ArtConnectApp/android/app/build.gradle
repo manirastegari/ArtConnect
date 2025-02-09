@@ -86,13 +86,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.mani.rastegari.ArtConnectApp'
+    namespace "com.artconnectapp"
     defaultConfig {
-        applicationId 'com.mani.rastegari.ArtConnectApp'
+        applicationId "com.artconnectapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0"
     }
     signingConfigs {
         debug {
@@ -173,7 +173,4 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    implementation 'com.microsoft.appcenter:appcenter-analytics:4.3.0'
-    implementation 'com.microsoft.appcenter:appcenter-crashes:4.3.0'
 }
