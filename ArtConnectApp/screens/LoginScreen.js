@@ -43,7 +43,7 @@ const LoginScreen = ({ navigation }) => {
   
       if (response.ok) {
         Alert.alert('Success', 'Logged in successfully');
-        login(data.userId);
+        login(data.userId, data.userType);
         if (saveCredentials) {
           await AsyncStorage.setItem('userEmail', email);
           await AsyncStorage.setItem('userPassword', password);

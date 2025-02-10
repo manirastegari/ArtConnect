@@ -5,7 +5,7 @@ import { AuthContext } from '../AuthContext';
 import CustomButton from './CustomButton';
 
 const Header = ({ navigation, showBackButton }) => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, userId, userType } = useContext(AuthContext);
 
   const handleProfilePress = () => {
     try {
@@ -20,20 +20,36 @@ const Header = ({ navigation, showBackButton }) => {
   };
 
   const handlePostPress = () => {
+    console.log('User Type:', userType);
     if (!isLoggedIn) {
       navigation.navigate('Auth', { screen: 'Login' });
     } else {
-      Alert.alert(
-        'Post Options',
-        'Choose an option',
-        [
-          { text: 'Post Art', onPress: () => navigation.navigate('PostArt') },
-          { text: 'Post Event', onPress: () => navigation.navigate('PostEvent') },
-        ],
-        { cancelable: true }
-      );
+      if (userType === 'Artist') {
+        Alert.alert(
+          'Post Options',
+          'Choose an option',
+          [
+            { text: 'Post Art', onPress: () => navigation.navigate('PostArt') },
+            { text: 'Post Event', onPress: () => navigation.navigate('PostEvent') },
+          ],
+          { cancelable: true }
+        );
+      } else if (userType === 'Customer') {
+        Alert.alert(
+          'Options',
+          'Choose an option',
+          [
+            { text: 'Book Event', onPress: () => navigation.navigate('Home', { screen: 'Events' }) },
+            { text: 'Buy Art', onPress: () => navigation.navigate('Home', { screen: 'Search' }) },
+          ],
+          { cancelable: true }
+        );
+      }
     }
   };
+
+  // Determine button text based on userType
+  const buttonText = userType === 'Artist' ? 'Post' : 'Options';
 
   return (
     <SafeAreaView>
@@ -59,7 +75,7 @@ const Header = ({ navigation, showBackButton }) => {
         </View>
         <View style={styles.rightContainer}>
           <CustomButton
-            text="Post"
+            text={buttonText}
             color="#4682b4"
             width={80}
             onPress={handlePostPress}
