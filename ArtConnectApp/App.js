@@ -8,6 +8,7 @@ import EventDetailsScreen from './screens/EventDetailsScreen';
 import AuthScreen from './screens/AuthScreen';
 import PostArtScreen from './screens/PostArtScreen';
 import PostEventScreen from './screens/PostEventScreen';
+import OrderScreen from './screens/OrderScreen'; // Import the new OrderScreen
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ export default function App() {
           <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
           <Stack.Screen name="PostArt" component={PostArtScreen} options={{ headerShown: false }} />
           <Stack.Screen name="PostEvent" component={PostEventScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Order" component={OrderScreen} options={{ headerShown: false }} /> 
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

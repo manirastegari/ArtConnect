@@ -20,6 +20,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
+        console.log(`Fetching event details for ID: ${eventId}`);
         const response = await fetch(`${config.API_BASE_URL}/api/events/${eventId}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -141,7 +142,13 @@ const EventDetailsScreen = ({ route, navigation }) => {
             text="BOOK"
             color="#4682b4"
             width="100%"
-            onPress={() => console.log('Book button pressed')}
+            onPress={() => {
+              if (!userId) {
+                navigation.navigate('Auth', { screen: 'Login' });
+              } else {
+                navigation.navigate('Order', { itemId: eventId, itemType: 'Event' });
+              }
+            }}
           />
 
           <View style={styles.horizontalLine} />
