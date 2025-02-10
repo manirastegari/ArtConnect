@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Swiper from 'react-native-swiper';
 import Header from '../components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../AuthContext';
-import { Alert } from 'react-native';
 import config from '../config';
+import CustomButton from '../components/CustomButton';
 
 const EventDetailsScreen = ({ route, navigation }) => {
   const { eventId } = route.params;
@@ -14,8 +14,8 @@ const EventDetailsScreen = ({ route, navigation }) => {
   const [eventDetails, setEventDetails] = useState(null);
   const [artistDetails, setArtistDetails] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [error, setError] = useState(null);
-
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -35,11 +35,14 @@ const EventDetailsScreen = ({ route, navigation }) => {
         const artistData = await artistResponse.json();
         setArtistDetails(artistData);
 
-        // Check if the event is in user's favorites
+        // Check if the event is in user's favorites and followed list
         const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
         const userFavorites = userData.favorites || [];
+        const userFollowed = userData.followed || [];
+
         setIsFavorite(userFavorites.includes(eventId));
+        setIsFollowing(userFollowed.includes(data.artistID));
       } catch (error) {
         console.error('Error fetching event details:', error);
         setError(error.message);
@@ -59,17 +62,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
       const response = await fetch(`${config.API_BASE_URL}/api/users/toggle-favorite/${userId}/${eventId}`, {
         method: 'POST',
       });
-  
-      const contentType = response.headers.get('content-type');
-      let data;
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        const text = await response.text();
-        console.error('Unexpected response format:', text);
-        throw new Error('Unexpected response format');
-      }
-  
+      const data = await response.json();
       if (response.ok) {
         setIsFavorite(!isFavorite);
       } else {
@@ -77,6 +70,27 @@ const EventDetailsScreen = ({ route, navigation }) => {
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
+    }
+  };
+
+  const toggleFollow = async () => {
+    if (!userId) {
+      Alert.alert('Login Required', 'You need to log in to follow artists.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.API_BASE_URL}/api/users/toggle-follow/${userId}/${artistDetails._id}`, {
+        method: 'POST',
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setIsFollowing(!isFollowing);
+      } else {
+        console.error('Error updating follow status:', data.error);
+      }
+    } catch (error) {
+      console.error('Error toggling follow:', error);
     }
   };
 
@@ -118,14 +132,36 @@ const EventDetailsScreen = ({ route, navigation }) => {
         <Text style={styles.date}>Date: {new Date(eventDetails.date).toLocaleDateString()}</Text>
         <Text style={styles.time}>Time: {eventDetails.time}</Text>
 
-        {/* Artist Information */}
-        <Text style={styles.artistInfoHeader}>Artist Information</Text>
-        <View style={styles.artistContainer}>
-          <Image
-            source={{ uri: `data:image/webp;base64,${artistDetails.image}` }}
-            style={styles.artistImage}
+        {/* Main content area */}
+        <View style={{ flex: 1 }} />
+
+        {/* Footer content */}
+        <View style={styles.footer}>
+          <CustomButton
+            text="BOOK"
+            color="#4682b4"
+            width="100%"
+            onPress={() => console.log('Book button pressed')}
           />
-          <Text style={styles.artistName}>{artistDetails.fullname}</Text>
+
+          <View style={styles.horizontalLine} />
+
+          <Text style={styles.artistInfoHeader}>Artist Information</Text>
+          <View style={styles.artistContainer}>
+            <View style={styles.artistInfo}>
+              <Image
+                source={{ uri: `data:image/webp;base64,${artistDetails.image}` }}
+                style={styles.artistImage}
+              />
+              <Text style={styles.artistName}>{artistDetails.fullname}</Text>
+            </View>
+            <CustomButton
+              text={isFollowing ? "Followed" : "Follow"}
+              color="lightgray"
+              width={80}
+              onPress={toggleFollow}
+            />
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -189,8 +225,13 @@ const styles = StyleSheet.create({
   },
   artistContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
+  },
+  artistInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   artistImage: {
     width: 50,
@@ -201,6 +242,14 @@ const styles = StyleSheet.create({
   artistName: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  horizontalLine: {
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    marginVertical: 10,
+  },
+  footer: {
+    paddingVertical: 10,
   },
 });
 
