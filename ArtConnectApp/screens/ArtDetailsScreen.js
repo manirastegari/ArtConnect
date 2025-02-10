@@ -20,6 +20,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchArtDetails = async () => {
       try {
+        console.log(`Fetching art details for ID: ${artId}`);
         const response = await fetch(`${config.API_BASE_URL}/api/arts/${artId}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -140,7 +141,13 @@ const ArtDetailsScreen = ({ route, navigation }) => {
             text="BUY"
             color="#4682b4"
             width="100%"
-            onPress={() => console.log('Buy button pressed')}
+            onPress={() => {
+              if (!userId) {
+                navigation.navigate('Auth', { screen: 'Login' });
+              } else {
+                navigation.navigate('Order', { itemId: artId, itemType: 'Art' });
+              }
+            }}
           />
 
           <View style={styles.horizontalLine} />
