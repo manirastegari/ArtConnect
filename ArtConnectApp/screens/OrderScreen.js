@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { AuthContext } from '../AuthContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '../components/Header';
 import config from '../config';
 
 const OrderScreen = ({ route, navigation }) => {
@@ -34,17 +36,28 @@ const OrderScreen = ({ route, navigation }) => {
       Alert.alert('Error', 'Please provide delivery address and phone number.');
       return;
     }
-
+  
     try {
-      // Update item availability
-      await fetch(`${config.API_BASE_URL}/api/${itemType.toLowerCase()}s/${itemId}`, {
-        method: 'PATCH',
+      // Update item availability only if it's an art
+      if (itemType.toLowerCase() === 'art') {
+        await fetch(`${config.API_BASE_URL}/api/${itemType.toLowerCase()}s/${itemId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ isAvailable: false }),
+        });
+      }
+  
+      // Update user's purchased or booked items
+      await fetch(`${config.API_BASE_URL}/api/users/complete-order`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ isAvailable: false }),
+        body: JSON.stringify({ userId, itemId, itemType }),
       });
-
+  
       Alert.alert('Success', 'Order has been completed.');
       navigation.navigate('Home');
     } catch (error) {
@@ -63,42 +76,52 @@ const OrderScreen = ({ route, navigation }) => {
   const totalPrice = price + deliveryFee + tax;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Order Details</Text>
-      <Text>Title: {itemDetails.title}</Text>
-      <Text>Type: {itemType}</Text>
-      <Text>Artist: {artistName}</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+        <Header navigation={navigation} showBackButton={true} />
+        <View style={styles.container}>
+        <Text style={styles.header}>Order Details</Text>
+        <Text>Title: {itemDetails.title}</Text>
+        <Text>Type: {itemType}</Text>
+        <Text>Artist: {artistName}</Text>
+        {itemType.toLowerCase() === 'event' && (
+          <>
+            <Text>Date: {new Date(itemDetails.date).toLocaleDateString()}</Text>
+            <Text>Time: {itemDetails.time}</Text>
+          </>
+        )}
 
-      <Text style={styles.header}>Pricing</Text>
-      <Text>Price: ${price.toFixed(2)}</Text>
-      <Text>Delivery Fee: ${deliveryFee.toFixed(2)}</Text>
-      <Text>Tax: ${tax.toFixed(2)}</Text>
-      <Text>Total: ${totalPrice.toFixed(2)}</Text>
+        <Text style={styles.header}>Pricing</Text>
+        <Text>Price: ${price.toFixed(2)}</Text>
+        <Text>Delivery Fee: ${deliveryFee.toFixed(2)}</Text>
+        <Text>Tax: ${tax.toFixed(2)}</Text>
+        <Text>Total: ${totalPrice.toFixed(2)}</Text>
 
-      <Text style={styles.header}>Delivery Information</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Delivery Address"
-        value={address}
-        onChangeText={setAddress}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Phone Number"
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
-      />
+        <Text style={styles.header}>Delivery Information</Text>
+        <TextInput
+            style={styles.input}
+            placeholder="Delivery Address"
+            value={address}
+            onChangeText={setAddress}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Phone Number"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+        />
 
-      <Button title="Complete Order" onPress={handleCompleteOrder} />
-    </View>
+        <Button title="Complete Order" onPress={handleCompleteOrder} />
+        </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 10,
+    backgroundColor: '#fff',
   },
   header: {
     fontSize: 18,
