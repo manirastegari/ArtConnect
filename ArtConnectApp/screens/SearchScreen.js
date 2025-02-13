@@ -10,61 +10,54 @@ const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [arts, setArts] = useState([]);
   const [events, setEvents] = useState([]);
-  const [filteredArts, setFilteredArts] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
 
   const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts`);
-        const artsData = await artsResponse.json();
-        setArts(artsData);
-        setFilteredArts(artsData);
-
-        const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events`);
-        const eventsData = await eventsResponse.json();
-        setEvents(eventsData);
-        setFilteredEvents(eventsData);
-
-        updateCategories([...artsData, ...eventsData]);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
-    filterResults();
+    handleSearch();
   }, [selectedCategory]);
+
+  const fetchInitialData = async () => {
+    try {
+      const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts`);
+      const artsData = await artsResponse.json();
+      setArts(artsData);
+
+      const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events`);
+      const eventsData = await eventsResponse.json();
+      setEvents(eventsData);
+
+      updateCategories([...artsData, ...eventsData]);
+    } catch (error) {
+      console.error('Error fetching initial data:', error);
+    }
+  };
+
+  const handleSearch = async () => {
+    try {
+      const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts?query=${searchQuery}&category=${selectedCategory}`);
+      const artsData = await artsResponse.json();
+      setArts(artsData);
+
+      const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events?query=${searchQuery}&category=${selectedCategory}`);
+      const eventsData = await eventsResponse.json();
+      setEvents(eventsData);
+
+      updateCategories([...artsData, ...eventsData]);
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    }
+  };
 
   const updateCategories = (items) => {
     const allCategories = [...new Set(items.map(item => item.category))];
     setCategories(allCategories);
-  };
-
-  const handleSearch = () => {
-    filterResults();
-  };
-
-  const filterResults = () => {
-    const query = searchQuery.toLowerCase();
-    const artsResults = arts.filter(art =>
-      (art.title.toLowerCase().includes(query) || art.description.toLowerCase().includes(query)) &&
-      (selectedCategory ? art.category === selectedCategory : true)
-    );
-    const eventsResults = events.filter(event =>
-      (event.title.toLowerCase().includes(query) || event.description.toLowerCase().includes(query)) &&
-      (selectedCategory ? event.category === selectedCategory : true)
-    );
-    setFilteredArts(artsResults);
-    setFilteredEvents(eventsResults);
-    updateCategories([...artsResults, ...eventsResults]);
   };
 
   return (
@@ -98,7 +91,7 @@ const SearchScreen = () => {
       </View>
       <Text style={styles.sectionHeader}>Arts</Text>
       <FlatList
-        data={filteredArts}
+        data={arts}
         keyExtractor={(item) => item._id}
         numColumns={2}
         renderItem={({ item }) => (
@@ -113,7 +106,7 @@ const SearchScreen = () => {
       />
       <Text style={styles.sectionHeader}>Events</Text>
       <FlatList
-        data={filteredEvents}
+        data={events}
         keyExtractor={(item) => item._id}
         numColumns={2}
         renderItem={({ item }) => (
