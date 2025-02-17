@@ -104,6 +104,7 @@ const SearchScreen = () => {
           />
         )}
       />
+      <View style={styles.separator} /> 
       <Text style={styles.sectionHeader}>Events</Text>
       <FlatList
         data={events}
@@ -127,6 +128,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 5,
+        backgroundColor: '#fff'
   },
   searchContainer: {
     flexDirection: 'row',
@@ -163,6 +165,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 3,
     textAlign: 'center',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#333',
+    marginVertical: 5, // Optional: adds space around the separator
   },
 });
 
