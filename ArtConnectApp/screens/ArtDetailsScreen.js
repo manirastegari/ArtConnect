@@ -27,7 +27,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         }
         const data = await response.json();
         setArtDetails(data);
-
+  
         // Fetch artist details
         const artistResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${data.artistID}`);
         if (!artistResponse.ok) {
@@ -35,21 +35,32 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         }
         const artistData = await artistResponse.json();
         setArtistDetails(artistData.user);
-
-        // Check if the art is in user's favorites and followed list
+  
+        // Fetch user details
         const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
-        const userFavorites = userData.favorites || [];
-        const userFollowed = userData.followed || [];
-
-        setIsFavorite(userFavorites.includes(artId));
-        setIsFollowing(userFollowed.includes(data.artistID));
+  
+        // Log the entire user data response
+        console.log('User data response:', userData);
+  
+        if (userData && userData.user) {
+          const userFavorites = userData.user.favorites.map(fav => fav._id) || []; // Extract IDs
+          const userFollowed = userData.user.followed.map(follow => follow._id) || []; // Extract IDs
+  
+          console.log('User favorites:', userFavorites); // Log the extracted IDs
+          setIsFavorite(userFavorites.includes(artId));
+          console.log('Is favorite:', isFavorite); // Log the state
+  
+          setIsFollowing(userFollowed.includes(data.artistID));
+        } else {
+          console.error('User data is undefined or does not contain expected structure');
+        }
       } catch (error) {
         console.error('Error fetching art details:', error);
         setError(error.message);
       }
     };
-
+  
     fetchArtDetails();
   }, [artId, userId]);
 
@@ -65,7 +76,8 @@ const ArtDetailsScreen = ({ route, navigation }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        setIsFavorite(!isFavorite);
+        // setIsFavorite(!isFavorite);
+        setIsFavorite(data.favorites.includes(artId));
       } else {
         console.error('Error updating favorites:', data.error);
       }
@@ -86,7 +98,8 @@ const ArtDetailsScreen = ({ route, navigation }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        setIsFollowing(!isFollowing);
+        // setIsFollowing(!isFollowing);
+        setIsFollowing(data.followed.includes(artDetails.artistID));
       } else {
         console.error('Error updating follow status:', data.error);
       }
