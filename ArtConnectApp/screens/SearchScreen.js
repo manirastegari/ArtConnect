@@ -124,6 +124,7 @@ const SearchScreen = () => {
   );
 };
 
+// h
 const styles = StyleSheet.create({
   container: {
     flex: 1,
