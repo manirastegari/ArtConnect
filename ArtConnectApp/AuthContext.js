@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(true);
     setUserId(id);
     setUserType(type);
-    console.log(`User logged in: ${id}, Type: ${type}`); // Debugging log
+    console.log(`User logged in: ${id}, Type: ${type}`);
   };
 
   const logout = () => {
