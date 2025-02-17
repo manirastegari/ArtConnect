@@ -35,12 +35,6 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-
-
-
-
-
-
 const mongoose = require('mongoose');
 
 const artSchema = new mongoose.Schema({
@@ -80,7 +74,9 @@ const userSchema = new mongoose.Schema({
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Art' }],
   followed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   type: { type: String, enum: ['Artist', 'Customer'], required: true },
-  image: { type: String, default: '' }
+  image: { type: String, default: '' },
+  purchasedArts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Art' }],
+  bookedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
 });
 
 module.exports = mongoose.model('User', userSchema);
@@ -146,15 +142,24 @@ router.post('/', upload.array('images', 3), async (req, res) => {
   }
 });
 
-// Get all art pieces with images in base64
 router.get('/', async (req, res) => {
   try {
-    const arts = await Art.find();
-    const artsWithBase64Images = arts.map(art => ({
-      ...art.toObject(),
-      images: art.images.map(imageBuffer => imageBuffer.toString('base64'))
-    }));
-    res.json(artsWithBase64Images);
+    const { query, category } = req.query;
+    const filter = { isAvailable: true };
+
+    if (query) {
+      filter.$or = [
+        { title: new RegExp(query, 'i') },
+        { description: new RegExp(query, 'i') }
+      ];
+    }
+
+    if (category) {
+      filter.category = category;
+    }
+
+    const arts = await Art.find(filter).sort({ _id: -1 }).limit(10); // Sort by most recent
+    res.json(arts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -253,15 +258,24 @@ router.post('/', upload.array('images', 3), async (req, res) => {
   }
 });
 
-// Get all events with images in base64
 router.get('/', async (req, res) => {
   try {
-    const events = await Event.find();
-    const eventsWithBase64Images = events.map(event => ({
-      ...event.toObject(),
-      images: event.images.map(imageBuffer => imageBuffer.toString('base64'))
-    }));
-    res.json(eventsWithBase64Images);
+    const { query, category } = req.query;
+    const filter = { isAvailable: true };
+
+    if (query) {
+      filter.$or = [
+        { title: new RegExp(query, 'i') },
+        { description: new RegExp(query, 'i') }
+      ];
+    }
+
+    if (category) {
+      filter.category = category;
+    }
+
+    const events = await Event.find(filter).sort({ _id: -1 }).limit(10); // Sort by most recent
+    res.json(events);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -465,5 +479,36 @@ router.post('/toggle-follow/:userId/:artistId', async (req, res) => {
   }
 });
 
-module.exports = router;
 
+router.post('/complete-order', async (req, res) => {
+  const { userId, itemId, itemType } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (itemType.toLowerCase() === 'art') {
+      const art = await Art.findById(itemId);
+      if (!art) {
+        return res.status(404).json({ error: 'Art not found' });
+      }
+      user.purchasedArts.push(art._id);
+    } else if (itemType.toLowerCase() === 'event') {
+      const event = await Event.findById(itemId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
+      user.bookedEvents.push(event._id);
+    }
+
+    await user.save();
+    res.status(200).json({ message: 'Order completed and user data updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+module.exports = router;

@@ -34,7 +34,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
           throw new Error(`HTTP error! status: ${artistResponse.status}`);
         }
         const artistData = await artistResponse.json();
-        setArtistDetails(artistData);
+        setArtistDetails(artistData.user);
 
         // Check if the art is in user's favorites and followed list
         const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
