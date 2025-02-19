@@ -40,16 +40,16 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
   
-        // Log the entire user data response
+        // Log the entire user data response .
         console.log('User data response:', userData);
   
         if (userData && userData.user) {
           const userFavorites = userData.user.favorites.map(fav => fav._id) || []; // Extract IDs
           const userFollowed = userData.user.followed.map(follow => follow._id) || []; // Extract IDs
   
-          console.log('User favorites:', userFavorites); // Log the extracted IDs
+          console.log('User favorites:', userFavorites); // Log the extracted IDs.
           setIsFavorite(userFavorites.includes(artId));
-          console.log('Is favorite:', isFavorite); // Log the state
+          console.log('Is favorite:', isFavorite); // Log the state.
   
           setIsFollowing(userFollowed.includes(data.artistID));
         } else {
