@@ -1,5 +1,5 @@
 const config = {
-  API_BASE_URL: 'https://artconnectbackend.onrender.com',
+  API_BASE_URL: 'https://artconnectbackendv2.onrender.com',
 };
 
 export default config;
