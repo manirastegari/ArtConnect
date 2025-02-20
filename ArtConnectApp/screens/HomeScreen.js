@@ -253,16 +253,16 @@ const FavoritesScreen = ({ navigation }) => {
 const SettingsScreen = ({ navigation }) => {
   const { isLoggedIn, logout, userId } = useContext(AuthContext);
   const [userDetails, setUserDetails] = useState(null);
+  const [userImage, setUserImage] = useState(null);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
-      // console.log('User Details Response:', data);
       try {
         const response = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const data = await response.json();
-        console.log('UUUUUser Details Response:', data);
         if (response.ok) {
           setUserDetails(data.user);
+          setUserImage(data.user.image);
         } else {
           Alert.alert('Error', data.error);
         }
@@ -296,10 +296,66 @@ const SettingsScreen = ({ navigation }) => {
       console.error('Error logging out:', error);
     }
   };
+  
+  const selectImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: result.assets[0].uri,
+        type: 'image/jpeg',
+        name: 'userImage.jpg',
+      });
+
+      try {
+        const response = await fetch(`${config.API_BASE_URL}/api/users/update-image/${userId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setUserImage(data.image);
+          Alert.alert('Success', 'Image updated successfully');
+        } else {
+          Alert.alert('Error', data.error || 'Unknown error');
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Something went wrong. Please try again later.');
+      }
+    }
+  };
 
   return isLoggedIn ? (
     <View style={styles.container}>
-      <View style={styles.content}>
+      <View style={styles.userInfoContainer}>
+        <TouchableOpacity onPress={selectImage}>
+          <Image
+            source={userImage ? { uri: `data:image/webp;base64,${userImage}` } : defaultUserImage}
+            style={styles.userImage}
+          />
+        </TouchableOpacity>
+        <View style={styles.content}>
+        {userDetails ? (
+          <>
+          <Text style={styles.label}>Name: <Text style={styles.value}>{userDetails.fullname}</Text></Text>
+          <Text style={styles.label}>Email: <Text style={styles.value}>{userDetails.email}</Text></Text>
+          <Text style={styles.label}>User Type: <Text style={styles.value}>{userDetails.type}</Text></Text>
+        </>
+        ) : (
+          <Text>Loading user details...</Text>
+        )}
+      </View>
+      </View>
+      {/* <View style={styles.content}>
         {userDetails ? (
           <>
             <Text>Name: {userDetails.fullname}</Text>
@@ -309,7 +365,7 @@ const SettingsScreen = ({ navigation }) => {
         ) : (
           <Text>Loading user details...</Text>
         )}
-      </View>
+      </View> */}
       <View style={styles.logoutButtonContainer}>
         <CustomButton
           text="Logout"
@@ -384,6 +440,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   content: {
+    margin: 16,
+  },
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  value: {
+    fontWeight: 'normal',
   },
   logoutButtonContainer: {
     marginBottom: 20,

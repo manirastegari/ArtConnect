@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import config from '../config';
+import CustomButton from '../components/CustomButton';
 
 const RegisterScreen = ({ navigation }) => {
   const [fullname, setFullname] = useState('');
@@ -82,7 +83,12 @@ const RegisterScreen = ({ navigation }) => {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
       />
-      <Button title="Register" onPress={handleRegister} />
+      <CustomButton
+        text="Register"
+        onPress={handleRegister}
+        color="#4682b4"
+        width="100%"
+      />
     </View>
   );
 };
@@ -92,6 +98,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,

@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../AuthContext';
 import config from '../config';
 import PagerView from 'react-native-pager-view';
+import CustomButton from '../components/CustomButton';
 
 const LoginScreen = ({ navigation }) => {
   const { login } = useContext(AuthContext);
@@ -85,7 +86,12 @@ const LoginScreen = ({ navigation }) => {
             onValueChange={setSaveCredentials}
           />
         </View>
-        <Button title="Login" onPress={handleLogin} />
+        <CustomButton
+          text="Login"
+          onPress={handleLogin}
+          color="#4682b4"
+          width="100%"
+        />
       </View>
     </PagerView>
   );
@@ -99,6 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
