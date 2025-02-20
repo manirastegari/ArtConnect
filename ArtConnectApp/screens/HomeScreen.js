@@ -381,7 +381,7 @@ const SettingsScreen = ({ navigation }) => {
 };
 
 const Tab = createBottomTabNavigator();
-
+// Q
 const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   
