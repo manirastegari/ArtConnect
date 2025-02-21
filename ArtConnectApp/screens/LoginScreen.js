@@ -96,7 +96,7 @@ const LoginScreen = ({ navigation }) => {
     </PagerView>
   );
 };
-//A
+//Ab
 const styles = StyleSheet.create({
   pagerView: {
     flex: 1,
