@@ -73,7 +73,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
       console.error('Error toggling favorite:', error);
     }
   };
-
+//A
   const toggleFollow = async () => {
     if (!userId) {
       Alert.alert('Login Required', 'You need to log in to follow artists.');
