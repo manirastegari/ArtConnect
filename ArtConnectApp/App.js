@@ -8,7 +8,7 @@ import EventDetailsScreen from './screens/EventDetailsScreen';
 import AuthScreen from './screens/AuthScreen';
 import PostArtScreen from './screens/PostArtScreen';
 import PostEventScreen from './screens/PostEventScreen';
-import OrderScreen from './screens/OrderScreen'; // Import the new OrderScreen
+import OrderScreen from './screens/OrderScreen';
 
 const Stack = createStackNavigator();
 
