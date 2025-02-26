@@ -41,7 +41,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         const userData = await userResponse.json();
   
         // Log the entire user data response .
-        console.log('User data response:', userData);
+        // console.log('User data response:', userData);
   
         if (userData && userData.user) {
           const userFavorites = userData.user.favorites.map(fav => fav._id) || []; // Extract IDs
@@ -52,6 +52,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
           console.log('Is favorite:', isFavorite); // Log the state.
   
           setIsFollowing(userFollowed.includes(data.artistID));
+          console.log('Is favorite:', isFavorite);
         } else {
           console.error('User data is undefined or does not contain expected structure');
         }

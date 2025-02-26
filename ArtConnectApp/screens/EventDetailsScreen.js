@@ -36,14 +36,23 @@ const EventDetailsScreen = ({ route, navigation }) => {
         const artistData = await artistResponse.json();
         setArtistDetails(artistData.user);
 
+        
         // Check if the event is in user's favorites and followed list
         const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
-        const userFavorites = userData.favorites || [];
-        const userFollowed = userData.followed || [];
+          if (userData && userData.user) {
+          // const userFavorites = userData.favorites || [];
+          // const userFollowed = userData.followed || [];
+          const userFavorites = userData.user.favorites.map(fav => fav._id) || []; // Extract IDs
+          const userFollowed = userData.user.followed.map(follow => follow._id) || []; // Extract IDs
 
-        setIsFavorite(userFavorites.includes(eventId));
-        setIsFollowing(userFollowed.includes(data.artistID));
+          console.log('User favorites:', userFavorites);
+          setIsFavorite(userFavorites.includes(eventId));
+          console.log('Is favorite:', isFavorite);
+          setIsFollowing(userFollowed.includes(data.artistID));
+        } else {
+          console.error('User data is undefined or does not contain expected structure');
+        }
       } catch (error) {
         console.error('Error fetching event details:', error);
         setError(error.message);
@@ -73,7 +82,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
       console.error('Error toggling favorite:', error);
     }
   };
-// A
+
   const toggleFollow = async () => {
     if (!userId) {
       Alert.alert('Login Required', 'You need to log in to follow artists.');
