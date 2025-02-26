@@ -17,6 +17,8 @@ const EventDetailsScreen = ({ route, navigation }) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [error, setError] = useState(null);
 
+
+
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
@@ -27,7 +29,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
         }
         const data = await response.json();
         setEventDetails(data);
-
+  
         // Fetch artist details
         const artistResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${data.artistID}`);
         if (!artistResponse.ok) {
@@ -35,21 +37,18 @@ const EventDetailsScreen = ({ route, navigation }) => {
         }
         const artistData = await artistResponse.json();
         setArtistDetails(artistData.user);
-
-        
+  
         // Check if the event is in user's favorites and followed list
         const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
-          if (userData && userData.user) {
-          // const userFavorites = userData.favorites || [];
-          // const userFollowed = userData.followed || [];
-          const userFavorites = userData.user.favorites.map(fav => fav._id) || []; // Extract IDs
-          const userFollowed = userData.user.followed.map(follow => follow._id) || []; // Extract IDs
-
-          console.log('User favorites:', userFavorites);
-          setIsFavorite(userFavorites.includes(eventId));
+        if (userData && userData.user) {
+          const favorites = userData.favorites || [];
+  
+          console.log('User favorites:', favorites);
+  
+          setIsFavorite(favorites.includes(eventId));
           console.log('Is favorite:', isFavorite);
-          setIsFollowing(userFollowed.includes(data.artistID));
+          setIsFollowing(userData.user.followed.map(follow => follow._id).includes(data.artistID));
         } else {
           console.error('User data is undefined or does not contain expected structure');
         }
@@ -58,9 +57,53 @@ const EventDetailsScreen = ({ route, navigation }) => {
         setError(error.message);
       }
     };
-
+  
     fetchEventDetails();
   }, [eventId, userId]);
+  // useEffect(() => {
+  //   const fetchEventDetails = async () => {
+  //     try {
+  //       console.log(`Fetching event details for ID: ${eventId}`);
+  //       const response = await fetch(`${config.API_BASE_URL}/api/events/${eventId}`);
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+  //       const data = await response.json();
+  //       setEventDetails(data);
+
+  //       // Fetch artist details
+  //       const artistResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${data.artistID}`);
+  //       if (!artistResponse.ok) {
+  //         throw new Error(`HTTP error! status: ${artistResponse.status}`);
+  //       }
+  //       const artistData = await artistResponse.json();
+  //       setArtistDetails(artistData.user);
+
+        
+  //       // Check if the event is in user's favorites and followed list
+  //       const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
+  //       const userData = await userResponse.json();
+  //         if (userData && userData.user) {
+  //         // const userFavorites = userData.favorites || [];
+  //         // const userFollowed = userData.followed || [];
+  //         const userFavorites = userData.user.favorites.map(fav => fav._id) || []; // Extract IDs
+  //         const userFollowed = userData.user.followed.map(follow => follow._id) || []; // Extract IDs
+
+  //         console.log('User favorites:', userFavorites);
+  //         setIsFavorite(userFavorites.includes(eventId));
+  //         console.log('Is favorite:', isFavorite);
+  //         setIsFollowing(userFollowed.includes(data.artistID));
+  //       } else {
+  //         console.error('User data is undefined or does not contain expected structure');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching event details:', error);
+  //       setError(error.message);
+  //     }
+  //   };
+
+  //   fetchEventDetails();
+  // }, [eventId, userId]);
 
   const toggleFavorite = async () => {
     if (!userId) {
