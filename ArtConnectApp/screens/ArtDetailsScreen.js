@@ -49,7 +49,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
   
           console.log('User favorites:', userFavorites); // Log the extracted IDs.
           setIsFavorite(userFavorites.includes(artId));
-          console.log('Is favorite:', isFavorite); // Log the state.
+          console.log('Is favorite:', isFavorite); // Log the state.a
   
           setIsFollowing(userFollowed.includes(data.artistID));
           console.log('Is favorite:', isFavorite);
