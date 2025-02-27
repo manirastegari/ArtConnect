@@ -40,7 +40,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
         const userData = await userResponse.json();
   
-        // Log the entire user data response ..
+        // Log the entire user data response ...
         // console.log('User data response:', userData);
   
         if (userData && userData.user) {
