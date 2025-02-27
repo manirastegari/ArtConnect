@@ -24,14 +24,17 @@ jobs:
     - name: Verify App Center CLI installation
       run: appcenter --version
 
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./ArtConnectApp  # Set to your app's directory
+
     - name: Build your project
-      run: |
-        # Add your build commands here
-        echo "Building the project..."
-        # Example: npm run build
+      run: npm run build
+      working-directory: ./ArtConnectApp  # Set to your app's directory
 
     - name: Deploy to App Center
       env:
         APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
       run: |
         appcenter distribute release --app ArtConnectOrg/ArtConnect --file android/app/build/outputs/apk/release/app-release.apk --group MyTesters
+      working-directory: ./ArtConnectApp  # Set to your app's directory
