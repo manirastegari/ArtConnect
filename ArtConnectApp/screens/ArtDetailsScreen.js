@@ -28,7 +28,7 @@ const ArtDetailsScreen = ({ route, navigation }) => {
         const data = await response.json();
         setArtDetails(data);
   
-        // Fetch artist details
+        // Fetch artist details .
         const artistResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${data.artistID}`);
         if (!artistResponse.ok) {
           throw new Error(`HTTP error! status: ${artistResponse.status}`);
