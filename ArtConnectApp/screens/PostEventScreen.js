@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, TextInput, Text, StyleSheet, Alert, Image, ScrollView, Platform, TouchableOpacity } from 'react-native';
+import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CustomButton from '../components/CustomButton';
@@ -17,6 +18,7 @@ const PostEventScreen = ({ navigation }) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
+  const [venueCapacity, setVenueCapacity] = useState(5);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -93,6 +95,7 @@ const PostEventScreen = ({ navigation }) => {
       formData.append('date', date.toISOString());
       formData.append('time', time.toTimeString().split(' ')[0]);
       formData.append('artistID', userId);
+      formData.append('venueCapacity', venueCapacity);
 
       images.forEach((imageUri, index) => {
         formData.append('images', {
@@ -133,96 +136,111 @@ const PostEventScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-        <Header navigation={navigation} showBackButton={true} />
-            <ScrollView style={styles.container}>
-            <Text style={styles.title}>Post Event</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Title"
-                value={title}
-                onChangeText={setTitle}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Category"
-                value={category}
-                onChangeText={setCategory}
-            />
-            <CustomButton
-                text="Select Images"
-                onPress={selectImage}
-                color="#4682b4"
-                width="100%"
-                disabled={images.length >= 3}
-            />
-            <View style={styles.imageContainer}>
-                {images.map((image, index) => (
-                <View key={index} style={styles.imageWrapper}>
-                    <Image source={{ uri: image }} style={styles.image} />
-                    <TouchableOpacity onPress={() => handleRemoveImage(index)} style={styles.removeButton}>
-                    <Text style={styles.removeButtonText}>Remove</Text>
-                    </TouchableOpacity>
-                </View>
-                ))}
+      <Header navigation={navigation} showBackButton={true} />
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 100 }}>
+        <Text style={styles.title}>Post Event</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Title"
+          value={title}
+          onChangeText={setTitle}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Category"
+          value={category}
+          onChangeText={setCategory}
+        />
+        <CustomButton
+          text="Select Images"
+          onPress={selectImage}
+          color="#4682b4"
+          width="100%"
+          disabled={images.length >= 3}
+        />
+        <View style={styles.imageContainer}>
+          {images.map((image, index) => (
+            <View key={index} style={styles.imageWrapper}>
+              <Image source={{ uri: image }} style={styles.image} />
+              <TouchableOpacity onPress={() => handleRemoveImage(index)} style={styles.removeButton}>
+                <Text style={styles.removeButtonText}>Remove</Text>
+              </TouchableOpacity>
             </View>
-            <TextInput
-                style={styles.input}
-                placeholder="Price"
-                value={price}
-                onChangeText={setPrice}
-                keyboardType="numeric"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Description"
-                value={description}
-                onChangeText={setDescription}
-            />
-            <CustomButton
-                text="Select Date"
-                onPress={() => setShowDatePicker(true)}
-                color="#4682b4"
-                width="100%"
-            />
-            {showDatePicker && (
-                <DateTimePicker
-                value={date}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                    setDate(selectedDate);
-                    }
-                }}
-                />
-            )}
-            <CustomButton
-                text="Select Time"
-                onPress={() => setShowTimePicker(true)}
-                color="#4682b4"
-                width="100%"
-            />
-            {showTimePicker && (
-                <DateTimePicker
-                value={time}
-                mode="time"
-                display="default"
-                onChange={(event, selectedTime) => {
-                    setShowTimePicker(false);
-                    if (selectedTime) {
-                    setTime(selectedTime);
-                    }
-                }}
-                />
-            )}
-            <CustomButton
-                text="Post Event"
-                onPress={handlePostEvent}
-                color="#4682b4"
-                width="100%"
-            />
-            </ScrollView>
+          ))}
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Price"
+          value={price}
+          onChangeText={setPrice}
+          keyboardType="numeric"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Description"
+          value={description}
+          onChangeText={setDescription}
+        />
+        <Text style={styles.label}>Venue Capacity: {venueCapacity}</Text>
+        <Slider
+          style={{ width: '100%', height: 40 }}
+          minimumValue={5}
+          maximumValue={50}
+          step={1}
+          value={venueCapacity}
+          onValueChange={setVenueCapacity}
+          minimumTrackTintColor="#4682b4"
+          maximumTrackTintColor="#000000"
+        />
+        <CustomButton
+          text="Select Date"
+          onPress={() => setShowDatePicker(true)}
+          color="#4682b4"
+          width="100%"
+          style={{ marginBottom: 16 }}
+        />
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) {
+                setDate(selectedDate);
+              }
+            }}
+          />
+        )}
+        <CustomButton
+          text="Select Time"
+          onPress={() => setShowTimePicker(true)}
+          color="#4682b4"
+          width="100%"
+          style={{ marginBottom: 16 }}
+        />
+        {showTimePicker && (
+          <DateTimePicker
+            value={time}
+            mode="time"
+            display="default"
+            onChange={(event, selectedTime) => {
+              setShowTimePicker(false);
+              if (selectedTime) {
+                setTime(selectedTime);
+              }
+            }}
+          />
+        )}
+      </ScrollView>
+      <View style={styles.postButtonContainer}>
+        <CustomButton
+          text="Post Event"
+          onPress={handlePostEvent}
+          color="#32CD32"
+          width="100%"
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -231,6 +249,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: '#fff'
   },
   title: {
     fontSize: 24,
@@ -243,6 +262,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+    borderRadius: 5,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
   },
   imageContainer: {
     flexDirection: 'row',
@@ -272,6 +296,14 @@ const styles = StyleSheet.create({
   removeButtonText: {
     color: '#fff',
     fontSize: 12,
+  },
+  postButtonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    backgroundColor: '#fff',
   },
 });
 

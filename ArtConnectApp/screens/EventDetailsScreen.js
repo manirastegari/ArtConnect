@@ -184,6 +184,7 @@ const EventDetailsScreen = ({ route, navigation }) => {
         <Text style={styles.category}>Category: {eventDetails.category}</Text>
         <Text style={styles.date}>Date: {new Date(eventDetails.date).toLocaleDateString()}</Text>
         <Text style={styles.time}>Time: {eventDetails.time}</Text>
+        <Text style={styles.venueCapacity}>Venue Capacity: {eventDetails.venueCapacity}</Text>
 
         {/* Main content area */}
         <View style={{ flex: 1 }} />
@@ -246,11 +247,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 10,
+    marginVertical: 5,
   },
   swiperContainer: {
     height: 220,
-    marginVertical: 10,
+    marginVertical: 5,
   },
   image: {
     width: '100%',
@@ -259,7 +260,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    marginVertical: 10,
+    marginVertical: 5,
   },
   category: {
     fontSize: 16,
@@ -275,18 +276,23 @@ const styles = StyleSheet.create({
     color: '#000',
     marginVertical: 5,
   },
+  venueCapacity: {
+    fontSize: 16,
+    color: '#000',
+    marginVertical: 5,
+  },
   artistInfoHeader: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 5,
     textAlign: 'center',
   },
   artistContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 5,
   },
   artistInfo: {
     flexDirection: 'row',

@@ -128,57 +128,59 @@ const PostArtScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <Header navigation={navigation} showBackButton={true} />
-                <ScrollView style={styles.container}>
-                    <Text style={styles.title}>Post Art</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Title"
-                        value={title}
-                        onChangeText={setTitle}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Category"
-                        value={category}
-                        onChangeText={setCategory}
-                    />
-                    <CustomButton
-                        text="Select Images"
-                        onPress={selectImage}
-                        color="#4682b4"
-                        width="100%"
-                        disabled={images.length >= 3}
-                    />
-                    <View style={styles.imageContainer}>
-                        {images.map((image, index) => (
-                            <View key={index} style={styles.imageWrapper}>
-                                <Image source={{ uri: image }} style={styles.image} />
-                                <TouchableOpacity onPress={() => handleRemoveImage(index)} style={styles.removeButton}>
-                                    <Text style={styles.removeButtonText}>Remove</Text>
-                                </TouchableOpacity>
-                            </View>
-                        ))}
-                    </View>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Price"
-                        value={price}
-                        onChangeText={setPrice}
-                        keyboardType="numeric"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Description"
-                        value={description}
-                        onChangeText={setDescription}
-                    />
-                    <CustomButton
-                        text="Post Art"
-                        onPress={handlePostArt}
-                        color="#4682b4"
-                        width="100%"
-                    />
-                </ScrollView>
+            <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 100 }}>
+                <Text style={styles.title}>Post Art</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Title"
+                    value={title}
+                    onChangeText={setTitle}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Category"
+                    value={category}
+                    onChangeText={setCategory}
+                />
+                <CustomButton
+                    text="Select Images"
+                    onPress={selectImage}
+                    color="#4682b4"
+                    width="100%"
+                    disabled={images.length >= 3}
+                />
+                <View style={styles.imageContainer}>
+                    {images.map((image, index) => (
+                        <View key={index} style={styles.imageWrapper}>
+                            <Image source={{ uri: image }} style={styles.image} />
+                            <TouchableOpacity onPress={() => handleRemoveImage(index)} style={styles.removeButton}>
+                                <Text style={styles.removeButtonText}>Remove</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                </View>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Price"
+                    value={price}
+                    onChangeText={setPrice}
+                    keyboardType="numeric"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Description"
+                    value={description}
+                    onChangeText={setDescription}
+                />
+            </ScrollView>
+            <View style={styles.postButtonContainer}>
+                <CustomButton
+                    text="Post Art"
+                    onPress={handlePostArt}
+                    color="#32CD32"
+                    width="100%"
+                />
+            </View>
         </SafeAreaView>
     );
 };
@@ -187,6 +189,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
+        backgroundColor: '#fff'
     },
     title: {
         fontSize: 24,
@@ -199,6 +202,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 12,
         paddingHorizontal: 8,
+        borderRadius: 5,
     },
     imageContainer: {
         flexDirection: 'row',
@@ -228,6 +232,14 @@ const styles = StyleSheet.create({
     removeButtonText: {
         color: '#fff',
         fontSize: 12,
+    },
+    postButtonContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: 16,
+        backgroundColor: '#fff',
     },
 });
 

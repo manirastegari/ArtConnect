@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 5,
   },
   title: {
     fontSize: 24,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   },
   swiperContainer: {
     height: 220,
-    marginVertical: 10,
+    marginVertical: 5,
   },
   image: {
     width: '100%',
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    marginVertical: 10,
+    marginVertical: 5,
   },
   category: {
     fontSize: 16,
@@ -233,14 +233,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 5,
     textAlign: 'center',
   },
   artistContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 5,
   },
   artistInfo: {
     flexDirection: 'row',
