@@ -21,7 +21,7 @@ const PostEventScreen = ({ navigation }) => {
   const [venueCapacity, setVenueCapacity] = useState(5);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-
+//a
   useEffect(() => {
     const requestPermissions = async () => {
       if (Platform.OS !== 'web') {
