@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { AuthContext } from '../AuthContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/Header';
@@ -12,6 +13,7 @@ const OrderScreen = ({ route, navigation }) => {
   const [artistName, setArtistName] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
+  const [seats, setSeats] = useState(1); // Default to 1 seat
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -36,7 +38,7 @@ const OrderScreen = ({ route, navigation }) => {
       Alert.alert('Error', 'Please provide delivery address and phone number.');
       return;
     }
-  
+
     try {
       // Update item availability only if it's an art
       if (itemType.toLowerCase() === 'art') {
@@ -48,16 +50,16 @@ const OrderScreen = ({ route, navigation }) => {
           body: JSON.stringify({ isAvailable: false }),
         });
       }
-  
+
       // Update user's purchased or booked items
       await fetch(`${config.API_BASE_URL}/api/users/complete-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId, itemId, itemType }),
+        body: JSON.stringify({ userId, itemId, itemType, seats }), // Include seats in the request
       });
-  
+
       Alert.alert('Success', 'Order has been completed.');
       navigation.navigate('Home');
     } catch (error) {
@@ -70,15 +72,15 @@ const OrderScreen = ({ route, navigation }) => {
     return <Text>Loading...</Text>;
   }
 
-  const price = itemDetails.price;
+  const price = itemDetails.price * (itemType.toLowerCase() === 'event' ? seats : 1); // Update price based on seats for events
   const deliveryFee = price * 0.05;
   const tax = price * 0.13;
   const totalPrice = price + deliveryFee + tax;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-        <Header navigation={navigation} showBackButton={true} />
-        <View style={styles.container}>
+      <Header navigation={navigation} showBackButton={true} />
+      <View style={styles.container}>
         <Text style={styles.header}>Order Details</Text>
         <Text>Title: {itemDetails.title}</Text>
         <Text>Type: {itemType}</Text>
@@ -87,6 +89,16 @@ const OrderScreen = ({ route, navigation }) => {
           <>
             <Text>Date: {new Date(itemDetails.date).toLocaleDateString()}</Text>
             <Text>Time: {itemDetails.time}</Text>
+            <Text style={styles.subHeader}>Select Number of Seats</Text>
+            <Picker
+              selectedValue={seats}
+              onValueChange={(value) => setSeats(value)}
+              style={styles.picker}
+            >
+              {[...Array(itemDetails.venueCapacity).keys()].map((_, index) => (
+                <Picker.Item key={index} label={`${index + 1}`} value={index + 1} />
+              ))}
+            </Picker>
           </>
         )}
 
@@ -98,21 +110,21 @@ const OrderScreen = ({ route, navigation }) => {
 
         <Text style={styles.header}>Delivery Information</Text>
         <TextInput
-            style={styles.input}
-            placeholder="Delivery Address"
-            value={address}
-            onChangeText={setAddress}
+          style={styles.input}
+          placeholder="Delivery Address"
+          value={address}
+          onChangeText={setAddress}
         />
         <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
+          style={styles.input}
+          placeholder="Phone Number"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
         />
 
         <Button title="Complete Order" onPress={handleCompleteOrder} />
-        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -128,12 +140,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 10,
   },
+  subHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginVertical: 5,
+  },
   input: {
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    marginBottom: 12,
   },
 });
 

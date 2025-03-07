@@ -8,7 +8,7 @@ import defaultUserImage from '../assets/userImage.png';
 import config from '../config';
 import CustomButton from '../components/CustomButton';
 
-// Dummy components for each tab
+// Component to prompt login
 const LoginPrompt = ({ navigation }) => (
   <View style={styles.centeredView}>
     <Text>Please log in to continue</Text>
@@ -99,6 +99,16 @@ const DashboardScreen = ({ navigation }) => {
       }
     }
   };
+  
+  const fetchEventDetails = async (eventId) => {
+    try {
+      const response = await fetch(`${config.API_BASE_URL}/api/events/${eventId}`);
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching event details:', error);
+      return null;
+    }
+  };
 
   const renderScene = SceneMap({
     purchasedArts: () => (
@@ -126,29 +136,46 @@ const DashboardScreen = ({ navigation }) => {
     ),
     bookedEvents: () => (
       <ScrollView style={styles.scrollView}>
-        {events.length > 0 ? events.map((event, index) => (
-          <View key={`event-${index}`} style={styles.artContainer}>
-            <View style={styles.titlePriceContainer}>
-              <Text style={styles.artTitle}>{event.title}</Text>
-              <Text style={styles.artPrice}>$ {event.price}</Text>
+        {events.length > 0 ? events.map((booking, index) => {
+          const [eventDetails, setEventDetails] = useState(null);
+
+          useEffect(() => {
+            const fetchDetails = async () => {
+              const details = await fetchEventDetails(booking.eventId);
+              setEventDetails(details);
+            };
+            fetchDetails();
+          }, [booking.eventId]);
+
+          if (!eventDetails) {
+            return <Text key={`loading-${index}`}>Loading...</Text>;
+          }
+
+          return (
+            <View key={`event-${index}`} style={styles.artContainer}>
+              <View style={styles.titlePriceContainer}>
+                <Text style={styles.artTitle}>{eventDetails.title}</Text>
+                <Text style={styles.artPrice}>$ {eventDetails.price}</Text>
+              </View>
+              <Text style={styles.artCategory}>{eventDetails.category}</Text>
+              <Text style={styles.artDescription}>{eventDetails.description}</Text>
+              <View style={styles.dateTimeContainer}>
+                <Text style={styles.artDate}>Date: {new Date(eventDetails.date).toLocaleDateString()}</Text>
+                <Text style={styles.artTime}>Time: {eventDetails.time}</Text>
+                <Text style={styles.artSeats}>Seats Booked: {booking.seats}</Text>
+              </View>
+              <Swiper style={styles.wrapper} showsButtons={true}>
+                {eventDetails.images.map((image, imgIndex) => (
+                  <Image
+                    key={imgIndex}
+                    source={{ uri: `data:image/webp;base64,${image}` }}
+                    style={styles.artImage}
+                  />
+                ))}
+              </Swiper>
             </View>
-            <Text style={styles.artCategory}>{event.category}</Text>
-            <Text style={styles.artDescription}>{event.description}</Text>
-            <View style={styles.dateTimeContainer}>
-              <Text style={styles.artDate}>Date: {new Date(event.date).toLocaleDateString()}</Text>
-              <Text style={styles.artTime}>Time: {event.time}</Text>
-            </View>
-            <Swiper style={styles.wrapper} showsButtons={true}>
-              {event.images.map((image, imgIndex) => (
-                <Image
-                  key={imgIndex}
-                  source={{ uri: `data:image/webp;base64,${image}` }}
-                  style={styles.artImage}
-                />
-              ))}
-            </Swiper>
-          </View>
-        )) : <Text style={styles.noItemsText}>You have no booked events.</Text>}
+          );
+        }) : <Text style={styles.noItemsText}>You have no booked events.</Text>}
       </ScrollView>
     ),
     postedArts: () => (
@@ -321,6 +348,10 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   artTime: {
+    fontSize: 14,
+    color: '#333',
+  },
+  artSeats: {
     fontSize: 14,
     color: '#333',
   },
