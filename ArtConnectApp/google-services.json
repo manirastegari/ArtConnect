@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "713031726822",
+    "project_id": "artconnectaab-s",
+    "storage_bucket": "artconnectaab-s.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713031726822:android:24ca8f2e9883e6f4aead27",
+        "android_client_info": {
+          "package_name": "com.mani.rastegari.ArtConnectApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvFZuCC62uYAJkIFwbS1z2CLhpqgk8JBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
