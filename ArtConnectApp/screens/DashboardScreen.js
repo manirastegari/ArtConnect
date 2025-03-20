@@ -8,7 +8,7 @@ import defaultUserImage from '../assets/userImage.png';
 import config from '../config';
 import CustomButton from '../components/CustomButton';
 
-// Component to prompt login ..................
+// Component to prompt login ...................
 const LoginPrompt = ({ navigation }) => (
   <View style={styles.centeredView}>
     <Text>Please log in to continue</Text>
