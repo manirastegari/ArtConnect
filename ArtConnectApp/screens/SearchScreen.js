@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { View, TextInput, FlatList, StyleSheet, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import ItemCard from '../components/ItemCard';
+import ItemCardRow from '../components/ItemCardRow';
 import CustomButton from '../components/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 import config from '../config';
+import { Dimensions } from 'react-native';
 
+const { height: screenHeight } = Dimensions.get('window');
+const halfScreenHeight = screenHeight / 2;
 const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [arts, setArts] = useState([]);
@@ -60,6 +64,7 @@ const SearchScreen = () => {
     setCategories(allCategories);
   };
 
+  
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -89,47 +94,51 @@ const SearchScreen = () => {
           </Picker>
         </View>
       </View>
-      <Text style={styles.sectionHeader}>Arts</Text>
-      <FlatList
-        data={arts}
-        keyExtractor={(item) => item._id}
-        numColumns={2}
-        renderItem={({ item }) => (
-          <ItemCard
-            image={item.images[0]}
-            title={item.title}
-            category={item.category}
-            price={item.price}
-            onPress={() => navigation.navigate('ArtDetails', { artId: item._id })}
-          />
-        )}
-      />
-      <View style={styles.separator} /> 
-      <Text style={styles.sectionHeader}>Events</Text>
-      <FlatList
-        data={events}
-        keyExtractor={(item) => item._id}
-        numColumns={2}
-        renderItem={({ item }) => (
-          <ItemCard
-            image={item.images[0]}
-            title={item.title}
-            category={item.category}
-            price={item.price}
-            onPress={() => navigation.navigate('EventDetails', { eventId: item._id })}
-          />
-        )}
-      />
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeader}>Arts</Text>
+        <FlatList
+          data={arts}
+          keyExtractor={(item) => item._id}
+          numColumns={2}
+          renderItem={({ item }) => (
+            <ItemCard
+              image={item.images[0]}
+              title={item.title}
+              category={item.category}
+              price={item.price}
+              onPress={() => navigation.navigate('ArtDetails', { artId: item._id })}
+            />
+          )}
+          style={styles.flatList}
+        />
+      </View>
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionHeader}>Events</Text>
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item._id}
+          numColumns={1}
+          renderItem={({ item }) => (
+            <ItemCardRow
+              image={item.images[0]}
+              title={item.title}
+              category={item.category}
+              price={item.price}
+              onPress={() => navigation.navigate('EventDetails', { eventId: item._id })}
+            />
+          )}
+          style={styles.flatList}
+        />
+      </View>
     </View>
   );
 };
 
-// h
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 5,
-        backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -154,23 +163,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#4682b4',
     overflow: 'hidden',
-    marginLeft: 4
+    marginLeft: 4,
   },
   picker: {
     height: 50,
     width: '100%',
     color: '#fff',
   },
+  sectionContainer: {
+    flex: 1,
+    // height: halfScreenHeight,,
+    paddingBottom: 10,
+    backgroundColor: '#ECECEC',
+    borderRadius: 8,
+    marginTop: 10,
+  },
   sectionHeader: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 3,
     textAlign: 'center',
   },
-  separator: {
-    height: 1,
-    backgroundColor: '#333',
-    marginVertical: 5, // Optional: adds space around the separator
+  flatList: {
+    flex: 1,
   },
 });
 

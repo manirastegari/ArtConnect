@@ -54,7 +54,7 @@ const OrderScreen = ({ route, navigation }) => {
         });
       }
 
-      // Update user's purchased or booked items
+      // Update user's purchased or booked items .
       await fetch(`${config.API_BASE_URL}/api/users/complete-order`, {
         method: 'POST',
         headers: {
