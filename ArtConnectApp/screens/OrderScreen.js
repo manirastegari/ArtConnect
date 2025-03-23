@@ -13,7 +13,7 @@ const OrderScreen = ({ route, navigation }) => {
   const [artistName, setArtistName] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
-  const [seats, setSeats] = useState(1); // Default to 1 seat
+  const [seats, setSeats] = useState(1); 
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -21,10 +21,13 @@ const OrderScreen = ({ route, navigation }) => {
         const response = await fetch(`${config.API_BASE_URL}/api/${itemType.toLowerCase()}s/${itemId}`);
         const data = await response.json();
         setItemDetails(data);
+        console.log('Item Details:', data);
 
         const artistResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${data.artistID}`);
         const artistData = await artistResponse.json();
-        setArtistName(artistData.fullname);
+        console.log('Artist Data:', artistData);
+
+        setArtistName(artistData.user.fullname);
       } catch (error) {
         console.error('Error fetching item details:', error);
       }

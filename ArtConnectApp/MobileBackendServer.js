@@ -1,327 +1,39 @@
-const mongoose = require('mongoose');
-
-const artSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  category: { type: String, required: true },
-  images: [{ type: String, required: true }],
-  price: { type: Number, required: true },
-  description: { type: String, required: true },
-  artistID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  isAvailable: { type: Boolean, default: true }
-});
-
-module.exports = mongoose.model('Art', artSchema);
-
-const mongoose = require('mongoose');
-
-const eventSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  category: { type: String, required: true },
-  images: [{ type: String, required: true }],
-  price: { type: Number, required: true },
-  description: { type: String, required: true },
-  date: { type: Date, required: true },
-  time: { type: String, required: true },
-  artistID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  isAvailable: { type: Boolean, default: true },
-  venueCapacity: { type: Number, min: 5, max: 50, required: true }
-});
-
-module.exports = mongoose.model('Event', eventSchema);
-
-const mongoose = require('mongoose');
-
-const userSchema = new mongoose.Schema({
-  fullname: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  favorites: [{ type: mongoose.Schema.Types.ObjectId }],
-  followed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  type: { type: String, enum: ['Artist', 'Customer'], required: true },
-  image: { type: String, default: '' },
-  purchasedArts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Art' }],
-  bookedEvents: [{
-    eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
-    seats: { type: Number, required: true }
-  }],
-});
-
-module.exports = mongoose.model('User', userSchema);
-
 const express = require('express');
-const multer = require('multer');
-const sharp = require('sharp');
-const router = express.Router();
-const Art = require('../models/Art');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
+const userRoutes = require('./routes/userRoutes');
+const artRoutes = require('./routes/artRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 
-// Set up multer for file uploads
-const upload = multer({
-  limits: {
-    fileSize: 150 * 1024 * 1024, // 150MB
-  },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error('Please upload an image'));
-    }
-    cb(undefined, true);
-  },
+
+// Mongo DB username and password
+// saeidkhalili2024
+// DZfjS3F8YrLKbJ8p
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use('/api/users', userRoutes);
+app.use('/api/arts', artRoutes);
+app.use('/api/events', eventRoutes);
+
+// MongoDB connection string
+const mongoURI = process.env.MONGO_URI;
+
+// Connect to MongoDB
+mongoose.connect(mongoURI)
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Define routes
+app.get('/', (req, res) => {
+  res.send('Hello, ArtConnect!');
 });
 
-// Add a new art piece
-router.post('/', upload.array('images', 3), async (req, res) => {
-  try {
-    const { title, category, price, description, artistID } = req.body;
-    const imageBase64Strings = await Promise.all(
-      req.files.map(async (file) => {
-        let buffer = await sharp(file.buffer)
-          .resize(1200, 800)
-          .toFormat('webp')
-          .toBuffer();
-
-        // Reduce quality until the image is under 150 KB
-        let quality = 90;
-        while (buffer.length > 150 * 1024 && quality > 10) {
-          buffer = await sharp(file.buffer)
-            .resize(1200, 800)
-            .toFormat('webp', { quality })
-            .toBuffer();
-          quality -= 10;
-        }
-
-        // Convert buffer to base64
-        return buffer.toString('base64');
-      })
-    );
-
-    const newArt = new Art({
-      title,
-      category,
-      images: imageBase64Strings,
-      price,
-      description,
-      artistID,
-    });
-
-    await newArt.save();
-    res.status(201).json({ message: 'Art added successfully' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-router.get('/', async (req, res) => {
-  try {
-    const { query, category } = req.query;
-    const filter = { isAvailable: true };
-
-    if (query) {
-      filter.$or = [
-        { title: new RegExp(query, 'i') },
-        { description: new RegExp(query, 'i') },
-        { category: new RegExp(query, 'i') } 
-      ];
-    }
-
-    if (category) {
-      filter.category = category;
-    }
-
-    const arts = await Art.find(filter).sort({ _id: -1 }).limit(10);
-    res.json(arts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get art details by ID
-router.get('/:id', async (req, res) => {
-  try {
-    console.log(`Fetching art with ID: ${req.params.id}`);
-    const art = await Art.findById(req.params.id);
-    if (!art) {
-      return res.status(404).json({ error: 'Art not found' });
-    }
-    res.json(art);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Update art availability
-router.patch('/:id', async (req, res) => {
-  try {
-    const { isAvailable } = req.body;
-    const art = await Art.findByIdAndUpdate(req.params.id, { isAvailable }, { new: true });
-    if (!art) {
-      return res.status(404).json({ error: 'Art not found' });
-    }
-    res.json(art);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-module.exports = router;
-
-const express = require('express');
-const multer = require('multer');
-const sharp = require('sharp');
-const router = express.Router();
-const Event = require('../models/Event');
-
-// Set up multer for file uploads
-const upload = multer({
-  limits: {
-    fileSize: 150 * 1024 * 1024, // 150MB
-  },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error('Please upload an image'));
-    }
-    cb(undefined, true);
-  },
-});
-
-
-// Add a new event
-router.post('/', upload.array('images', 3), async (req, res) => {
-  try {
-    const { title, category, price, description, date, time, artistID, venueCapacity } = req.body; // Include venueCapacity
-    const imageBase64Strings = await Promise.all(
-      req.files.map(async (file) => {
-        let buffer = await sharp(file.buffer)
-          .resize(1200, 800)
-          .toFormat('webp')
-          .toBuffer();
-
-        let quality = 90;
-        while (buffer.length > 150 * 1024 && quality > 10) {
-          buffer = await sharp(file.buffer)
-            .resize(1200, 800)
-            .toFormat('webp', { quality })
-            .toBuffer();
-          quality -= 10;
-        }
-
-        return buffer.toString('base64');
-      })
-    );
-
-    const newEvent = new Event({
-      title,
-      category,
-      images: imageBase64Strings,
-      price,
-      description,
-      date,
-      time,
-      artistID,
-      venueCapacity // Include venueCapacity
-    });
-
-    await newEvent.save();
-    res.status(201).json({ message: 'Event added successfully' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-// Add a new event
-// router.post('/', upload.array('images', 3), async (req, res) => {
-//   try {
-//     const { title, category, price, description, date, time, artistID } = req.body;
-//     const imageBase64Strings = await Promise.all(
-//       req.files.map(async (file) => {
-//         let buffer = await sharp(file.buffer)
-//           .resize(1200, 800)
-//           .toFormat('webp')
-//           .toBuffer();
-
-//         // Reduce quality until the image is under 150 KB
-//         let quality = 90;
-//         while (buffer.length > 150 * 1024 && quality > 10) {
-//           buffer = await sharp(file.buffer)
-//             .resize(1200, 800)
-//             .toFormat('webp', { quality })
-//             .toBuffer();
-//           quality -= 10;
-//         }
-
-//         // Convert buffer to base64
-//         return buffer.toString('base64');
-//       })
-//     );
-
-//     const newEvent = new Event({
-//       title,
-//       category,
-//       images: imageBase64Strings, 
-//       price,
-//       description,
-//       date,
-//       time,
-//       artistID,
-//     });
-
-//     await newEvent.save();
-//     res.status(201).json({ message: 'Event added successfully' });
-//   } catch (error) {
-//     res.status(400).json({ error: error.message });
-//   }
-// });
-
-router.get('/', async (req, res) => {
-  try {
-    const { query, category } = req.query;
-    const filter = { isAvailable: true };
-
-    if (query) {
-      filter.$or = [
-        { title: new RegExp(query, 'i') },
-        { description: new RegExp(query, 'i') },
-        { category: new RegExp(query, 'i') } 
-      ];
-    }
-
-    if (category) {
-      filter.category = category;
-    }
-
-    const events = await Event.find(filter).sort({ _id: -1 }).limit(10); 
-    res.json(events);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get event details by ID
-router.get('/:id', async (req, res) => {
-  try {
-    console.log(`Fetching event with ID: ${req.params.id}`);
-    const event = await Event.findById(req.params.id);
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-    res.json(event);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Update event availability
-router.patch('/:id', async (req, res) => {
-  try {
-    const { isAvailable } = req.body;
-    const event = await Event.findByIdAndUpdate(req.params.id, { isAvailable }, { new: true });
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-    res.json(event);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-module.exports = router;
+// Start server
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 const express = require('express');
 const multer = require('multer');
@@ -542,6 +254,8 @@ router.post('/toggle-follow/:userId/:artistId', async (req, res) => {
 // });
 // Inside the complete-order route
 // Inside the complete-order route
+
+
 router.post('/complete-order', async (req, res) => {
   const { userId, itemId, itemType, seats } = req.body;
 
@@ -565,102 +279,319 @@ router.post('/complete-order', async (req, res) => {
       if (event.venueCapacity < seats) {
         return res.status(400).json({ error: 'Not enough seats available' });
       }
+
+      console.log(`Booking ${seats} seats for event: ${event.title}`);
       event.venueCapacity -= seats; // Subtract booked seats from venue capacity
 
       // Check if the event is fully booked
       if (event.venueCapacity === 0) {
         event.isAvailable = false; // Set isAvailable to false if no seats are left
+        console.log(`Event ${event.title} is now fully booked and unavailable.`);
       }
 
       await event.save();
+      console.log(`Event ${event.title} updated with new capacity: ${event.venueCapacity}`);
 
       // Add a new booking entry with the number of seats
       user.bookedEvents.push({ eventId: event._id, seats });
     }
 
     await user.save();
+    console.log(`User ${user.fullname} booking updated successfully.`);
     res.status(200).json({ message: 'Order completed and user data updated successfully' });
   } catch (error) {
+    console.error('Error completing order:', error);
     res.status(500).json({ error: error.message });
   }
 });
-// router.post('/complete-order', async (req, res) => {
-//   const { userId, itemId, itemType, seats } = req.body;
-
-//   try {
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
-
-//     if (itemType.toLowerCase() === 'art') {
-//       const art = await Art.findById(itemId);
-//       if (!art) {
-//         return res.status(404).json({ error: 'Art not found' });
-//       }
-//       user.purchasedArts.push(art._id);
-//     } else if (itemType.toLowerCase() === 'event') {
-//       const event = await Event.findById(itemId);
-//       if (!event) {
-//         return res.status(404).json({ error: 'Event not found' });
-//       }
-//       if (event.venueCapacity < seats) {
-//         return res.status(400).json({ error: 'Not enough seats available' });
-//       }
-//       event.venueCapacity -= seats; // Subtract booked seats from venue capacity
-
-//       // Check if the event is fully booked
-//       if (event.venueCapacity === 0) {
-//         event.isAvailable = false; // Set isAvailable to false if no seats are left
-//       }
-
-//       await event.save();
-//       user.bookedEvents.push(event._id);
-//     }
-
-//     await user.save();
-//     res.status(200).json({ message: 'Order completed and user data updated successfully' });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
 
 
 module.exports = router;
 
+
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
-const userRoutes = require('./routes/userRoutes');
-const artRoutes = require('./routes/artRoutes');
-const eventRoutes = require('./routes/eventRoutes');
+const multer = require('multer');
+const sharp = require('sharp');
+const router = express.Router();
+const Event = require('../models/Event');
 
-
-// Mongo DB username and password
-// saeidkhalili2024
-// DZfjS3F8YrLKbJ8p
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use('/api/users', userRoutes);
-app.use('/api/arts', artRoutes);
-app.use('/api/events', eventRoutes);
-
-// MongoDB connection string
-const mongoURI = process.env.MONGO_URI;
-
-// Connect to MongoDB
-mongoose.connect(mongoURI)
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-// Define routes
-app.get('/', (req, res) => {
-  res.send('Hello, ArtConnect!');
+// Set up multer for file uploads
+const upload = multer({
+  limits: {
+    fileSize: 150 * 1024 * 1024, // 150MB
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error('Please upload an image'));
+    }
+    cb(undefined, true);
+  },
 });
 
-// Start server
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Add a new event
+router.post('/', upload.array('images', 3), async (req, res) => {
+  try {
+    const { title, category, price, description, date, time, artistID, venueCapacity } = req.body; // Include venueCapacity
+    const imageBase64Strings = await Promise.all(
+      req.files.map(async (file) => {
+        let buffer = await sharp(file.buffer)
+          .resize(1200, 800)
+          .toFormat('webp')
+          .toBuffer();
+
+        let quality = 90;
+        while (buffer.length > 150 * 1024 && quality > 10) {
+          buffer = await sharp(file.buffer)
+            .resize(1200, 800)
+            .toFormat('webp', { quality })
+            .toBuffer();
+          quality -= 10;
+        }
+
+        return buffer.toString('base64');
+      })
+    );
+
+    const newEvent = new Event({
+      title,
+      category,
+      images: imageBase64Strings,
+      price,
+      description,
+      date,
+      time,
+      artistID,
+      venueCapacity // Include venueCapacity
+    });
+
+    await newEvent.save();
+    res.status(201).json({ message: 'Event added successfully' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const { query, category } = req.query;
+    const filter = { isAvailable: true };
+
+    if (query) {
+      filter.$or = [
+        { title: new RegExp(query, 'i') },
+        { description: new RegExp(query, 'i') },
+        { category: new RegExp(query, 'i') } 
+      ];
+    }
+
+    if (category) {
+      filter.category = category;
+    }
+
+    const events = await Event.find(filter).sort({ _id: -1 }).limit(10); 
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get event details by ID
+router.get('/:id', async (req, res) => {
+  try {
+    console.log(`Fetching event with ID: ${req.params.id}`);
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update event availability
+router.patch('/:id', async (req, res) => {
+  try {
+    const { isAvailable } = req.body;
+    const event = await Event.findByIdAndUpdate(req.params.id, { isAvailable }, { new: true });
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;
+
+
+const express = require('express');
+const multer = require('multer');
+const sharp = require('sharp');
+const router = express.Router();
+const Art = require('../models/Art');
+
+// Set up multer for file uploads
+const upload = multer({
+  limits: {
+    fileSize: 150 * 1024 * 1024, // 150MB
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error('Please upload an image'));
+    }
+    cb(undefined, true);
+  },
+});
+
+// Add a new art piece
+router.post('/', upload.array('images', 3), async (req, res) => {
+  try {
+    const { title, category, price, description, artistID } = req.body;
+    const imageBase64Strings = await Promise.all(
+      req.files.map(async (file) => {
+        let buffer = await sharp(file.buffer)
+          .resize(1200, 800)
+          .toFormat('webp')
+          .toBuffer();
+
+        // Reduce quality until the image is under 150 KB
+        let quality = 90;
+        while (buffer.length > 150 * 1024 && quality > 10) {
+          buffer = await sharp(file.buffer)
+            .resize(1200, 800)
+            .toFormat('webp', { quality })
+            .toBuffer();
+          quality -= 10;
+        }
+
+        // Convert buffer to base64
+        return buffer.toString('base64');
+      })
+    );
+
+    const newArt = new Art({
+      title,
+      category,
+      images: imageBase64Strings,
+      price,
+      description,
+      artistID,
+    });
+
+    await newArt.save();
+    res.status(201).json({ message: 'Art added successfully' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const { query, category } = req.query;
+    const filter = { isAvailable: true };
+
+    if (query) {
+      filter.$or = [
+        { title: new RegExp(query, 'i') },
+        { description: new RegExp(query, 'i') },
+        { category: new RegExp(query, 'i') } 
+      ];
+    }
+
+    if (category) {
+      filter.category = category;
+    }
+
+    const arts = await Art.find(filter).sort({ _id: -1 }).limit(10);
+    res.json(arts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get art details by ID
+router.get('/:id', async (req, res) => {
+  try {
+    console.log(`Fetching art with ID: ${req.params.id}`);
+    const art = await Art.findById(req.params.id);
+    if (!art) {
+      return res.status(404).json({ error: 'Art not found' });
+    }
+    res.json(art);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update art availability
+router.patch('/:id', async (req, res) => {
+  try {
+    const { isAvailable } = req.body;
+    const art = await Art.findByIdAndUpdate(req.params.id, { isAvailable }, { new: true });
+    if (!art) {
+      return res.status(404).json({ error: 'Art not found' });
+    }
+    res.json(art);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;
+
+
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  fullname: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  favorites: [{ type: mongoose.Schema.Types.ObjectId }],
+  followed: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  type: { type: String, enum: ['Artist', 'Customer'], required: true },
+  image: { type: String, default: '' },
+  purchasedArts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Art' }],
+  bookedEvents: [{
+    eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
+    seats: { type: Number, required: true }
+  }],
+});
+
+module.exports = mongoose.model('User', userSchema);
+
+
+
+const mongoose = require('mongoose');
+
+const eventSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  category: { type: String, required: true },
+  images: [{ type: String, required: true }],
+  price: { type: Number, required: true },
+  description: { type: String, required: true },
+  date: { type: Date, required: true },
+  time: { type: String, required: true },
+  artistID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  isAvailable: { type: Boolean, default: true },
+  venueCapacity: { type: Number, required: true }
+});
+
+module.exports = mongoose.model('Event', eventSchema);
+
+
+const mongoose = require('mongoose');
+
+const artSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  category: { type: String, required: true },
+  images: [{ type: String, required: true }],
+  price: { type: Number, required: true },
+  description: { type: String, required: true },
+  artistID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  isAvailable: { type: Boolean, default: true }
+});
+
+module.exports = mongoose.model('Art', artSchema);
