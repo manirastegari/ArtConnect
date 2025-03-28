@@ -181,10 +181,18 @@ const EventDetailsScreen = ({ route, navigation }) => {
           </Swiper>
         </View>
         <Text style={styles.description}>{eventDetails.description}</Text>
-        <Text style={styles.category}>Category: {eventDetails.category}</Text>
-        <Text style={styles.date}>Date: {new Date(eventDetails.date).toLocaleDateString()}</Text>
-        <Text style={styles.time}>Time: {eventDetails.time}</Text>
-        <Text style={styles.venueCapacity}>Venue Capacity: {eventDetails.venueCapacity}</Text>
+        <Text style={styles.category}>
+          <Text style={styles.boldText}>Category:</Text> {eventDetails.category}
+        </Text>
+        <Text style={styles.date}>
+          <Text style={styles.boldText}>Date:</Text> {new Date(eventDetails.date).toLocaleDateString()}
+        </Text>
+        <Text style={styles.time}>
+          <Text style={styles.boldText}>Time:</Text> {eventDetails.time}
+        </Text>
+        <Text style={styles.venueCapacity}>
+          <Text style={styles.boldText}>Venue Capacity:</Text> {eventDetails.venueCapacity}
+        </Text>
 
         {/* Main content area */}
         <View style={{ flex: 1 }} />
@@ -315,6 +323,9 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingVertical: 10,
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
 });
 

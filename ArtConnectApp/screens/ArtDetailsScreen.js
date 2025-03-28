@@ -143,13 +143,17 @@ const ArtDetailsScreen = ({ route, navigation }) => {
           </Swiper>
         </View>
         <Text style={styles.description}>{artDetails.description || 'No description available.'}</Text>
-        <Text style={styles.category}>Category: {artDetails.category || 'N/A'}</Text>
-        <Text style={styles.price}>Price: ${artDetails.price || 'N/A'}</Text>
+        <Text style={styles.category}>
+          <Text style={styles.boldText}>Category:</Text> {artDetails.category || 'N/A'}
+        </Text>
+        <Text style={styles.price}>
+          <Text style={styles.boldText}>Price:</Text> ${artDetails.price || 'N/A'}
+        </Text>
 
-        {/* Main content area */}
+        
         <View style={{ flex: 1 }} />
 
-        {/* Footer content */}
+        
         <View style={styles.footer}>
           <CustomButton
             text="BUY"
@@ -263,6 +267,9 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingVertical: 10,
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
 });
 

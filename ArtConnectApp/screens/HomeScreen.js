@@ -23,148 +23,11 @@ const LoginPrompt = ({ navigation }) => (
     <CustomButton
       text="Login"
       onPress={() => navigation.navigate('Auth', { screen: 'Login' })}
-      color="#4682b4" // You can choose any color you prefer
-      width="80%" // Adjust the width as needed
+      color="#4682b4" 
+      width="80%"
     />
   </View>
 );
-
-// const ArtsScreen = ({ navigation }) => {
-//   const { isLoggedIn, userId } = useContext(AuthContext);
-//   const [arts, setArts] = useState([]);
-//   const [events, setEvents] = useState([]);
-//   const [userImage, setUserImage] = useState(null);
-
-//   useEffect(() => {
-//     const fetchArtsAndEvents = async () => {
-//       try {
-//         const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts`);
-//         const artsData = await artsResponse.json();
-//         // Filter arts by artistID
-//         const userArts = artsData.filter(art => art.artistID === userId);
-//         setArts(userArts);
-
-//         const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events`);
-//         const eventsData = await eventsResponse.json();
-//         // Filter events by artistID
-//         const userEvents = eventsData.filter(event => event.artistID === userId);
-//         setEvents(userEvents);
-
-//         const userResponse = await fetch(`${config.API_BASE_URL}/api/users/details/${userId}`);
-//         const userData = await userResponse.json();
-//         setUserImage(userData.image);
-//       } catch (error) {
-//         console.error('Error fetching arts, events, or user image:', error);
-//       }
-//     };
-
-//     if (isLoggedIn) {
-//       fetchArtsAndEvents();
-//     }
-//   }, [isLoggedIn, userId]);
-
-//   const selectImage = async () => {
-//     const result = await ImagePicker.launchImageLibraryAsync({
-//       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-//       allowsEditing: true,
-//       quality: 1,
-//     });
-
-//     if (!result.canceled) {
-//       console.log('Image URI:', result.assets[0].uri);
-//       const formData = new FormData();
-//       formData.append('image', {
-//         uri: result.assets[0].uri,
-//         type: 'image/jpeg',
-//         name: 'userImage.jpg',
-//       });
-//       // formData.append('userId', userId);
-
-//       try {
-//         const response = await fetch(`${config.API_BASE_URL}/api/users/update-image/${userId}`, {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'multipart/form-data',
-//           },
-//           body: formData,
-//         });
-
-//         const data = await response.json();
-//         if (response.ok) {
-//           setUserImage(data.image);
-//           Alert.alert('Success', 'Image updated successfully');
-//         } else {
-//           Alert.alert('Error', data.error || 'Unknown error');
-//         }
-//       } catch (error) {
-//         // console.error('Error updating image:', error);
-//         Alert.alert('Error', 'Something went wrong. Please try again later.');
-//       }
-//     }
-//   };
-
-//   return isLoggedIn ? (
-//     <ScrollView style={styles.scrollView}>
-//       <TouchableOpacity onPress={selectImage}>
-//         <Image
-//           source={userImage ? { uri: `data:image/webp;base64,${userImage}` } : defaultUserImage}
-//           style={styles.userImage}
-//         />
-//       </TouchableOpacity>
-//       <Text style={styles.sectionHeader}>Posted Arts</Text>
-//       {arts.map((art, index) => (
-//         <View key={`art-${index}`} style={styles.artContainer}>
-//           <View style={styles.titlePriceContainer}>
-//             <Text style={styles.artTitle}>{art.title}</Text>
-//             <Text style={styles.artPrice}>$ {art.price}</Text>
-//           </View>
-//           <Text style={styles.artCategory}>{art.category}</Text>
-//           <Text style={styles.artDescription}>{art.description}</Text>
-//           <Swiper style={styles.wrapper} showsButtons={true}>
-//             {art.images.map((image, imgIndex) => (
-//               <Image
-//                 key={imgIndex}
-//                 source={{ uri: `data:image/webp;base64,${image}` }}
-//                 style={styles.artImage}
-//               />
-//             ))}
-//           </Swiper>
-//         </View>
-//       ))}
-//       <Text style={styles.sectionHeader}>Posted Events</Text>
-//       {events.map((event, index) => (
-//         <View key={`event-${index}`} style={styles.artContainer}>
-//           <View style={styles.titlePriceContainer}>
-//             <Text style={styles.artTitle}>{event.title}</Text>
-//             <Text style={styles.artPrice}>$ {event.price}</Text>
-//           </View>
-//           <Text style={styles.artCategory}>{event.category}</Text>
-//           <Text style={styles.artDescription}>{event.description}</Text>
-//           <View style={styles.dateTimeContainer}>
-//             <Text style={styles.artDate}>Date: {new Date(event.date).toLocaleDateString()}</Text>
-//             <Text style={styles.artTime}>Time: {event.time}</Text>
-//           </View>
-//           <Swiper style={styles.wrapper} showsButtons={true}>
-//             {event.images.map((image, imgIndex) => (
-//               <Image
-//                 key={imgIndex}
-//                 source={{ uri: `data:image/webp;base64,${image}` }}
-//                 style={styles.artImage}
-//               />
-//             ))}
-//           </Swiper>
-//         </View>
-//       ))}
-//     </ScrollView>
-//   ) : (
-//     <LoginPrompt navigation={navigation} />
-//   );
-// };
-
-// const EventsScreen = ({ navigation }) => {
-//   const { isLoggedIn } = useContext(AuthContext);
-//   return isLoggedIn ? <View><Text>Events Content</Text></View> : <LoginPrompt navigation={navigation} />;
-// };
 
 const FavoritesScreen = ({ navigation }) => {
   const { isLoggedIn, userId } = useContext(AuthContext);
@@ -337,11 +200,14 @@ const SettingsScreen = ({ navigation }) => {
   return isLoggedIn ? (
     <View style={styles.container}>
       <View style={styles.userInfoContainer}>
-        <TouchableOpacity onPress={selectImage}>
+        <TouchableOpacity onPress={selectImage} style={styles.imageContainer}>
           <Image
             source={userImage ? { uri: `data:image/webp;base64,${userImage}` } : defaultUserImage}
             style={styles.userImage}
           />
+          <View style={styles.imageOverlay}>
+            <Text style={styles.imageOverlayText}>Change Image</Text>
+          </View>
         </TouchableOpacity>
         <View style={styles.content}>
         {userDetails ? (
@@ -355,17 +221,7 @@ const SettingsScreen = ({ navigation }) => {
         )}
       </View>
       </View>
-      {/* <View style={styles.content}>
-        {userDetails ? (
-          <>
-            <Text>Name: {userDetails.fullname}</Text>
-            <Text>Email: {userDetails.email}</Text>
-            <Text>User Type: {userDetails.type}</Text>
-          </>
-        ) : (
-          <Text>Loading user details...</Text>
-        )}
-      </View> */}
+  
       <View style={styles.logoutButtonContainer}>
         <CustomButton
           text="Logout"
@@ -399,8 +255,6 @@ const HomeScreen = ({ navigation }) => {
               iconName = 'search';
             } else if (route.name === 'Dashboard') {
               iconName = 'brush';
-            // } else if (route.name === 'Events') {
-            //   iconName = 'calendar';
             } else if (route.name === 'Favorites') {
               iconName = 'heart';
             } else if (route.name === 'Settings') {
@@ -414,8 +268,6 @@ const HomeScreen = ({ navigation }) => {
       >
         <Tab.Screen name="Search" component={SearchScreen} />
         <Tab.Screen name="Dashboard" component={DashboardScreen} />
-        {/* <Tab.Screen name="Dashboard" component={ArtsScreen} /> */}
-        {/* <Tab.Screen name="Events" component={EventsScreen} /> */}
         <Tab.Screen name="Favorites" component={FavoritesScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
@@ -436,6 +288,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   container: {
+    backgroundColor: '#ffffff',
     flex: 1,
     justifyContent: 'space-between',
   },
@@ -541,6 +394,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
+  },
+  imageContainer: {
+    position: 'relative',
+    alignSelf: 'center',
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    paddingVertical: 5,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+  },
+  imageOverlayText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 12,
   },
 });
 

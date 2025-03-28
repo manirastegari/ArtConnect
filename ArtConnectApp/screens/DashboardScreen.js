@@ -244,11 +244,14 @@ const DashboardScreen = ({ navigation }) => {
   return isLoggedIn ? (
     <View style={{ flex: 1 }}>
       <View style={styles.userInfoContainer}>
-        <TouchableOpacity onPress={selectImage}>
+        <TouchableOpacity onPress={selectImage} style={styles.imageContainer}>
           <Image
             source={userImage ? { uri: `data:image/webp;base64,${userImage}` } : defaultUserImage}
             style={styles.userImage}
           />
+          <View style={styles.imageOverlay}>
+            <Text style={styles.imageOverlayText}>Change Image</Text>
+          </View>
         </TouchableOpacity>
         <Text style={styles.userName}>{userDetails?.fullname || 'User'}</Text>
       </View>
@@ -280,8 +283,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
   },
   userImage: {
-    width: 60,
-    height: 60,
+    width: 90,
+    height: 90,
     borderWidth: 1,
     borderColor: '#777',
     borderRadius: 50,
@@ -360,6 +363,25 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontSize: 16,
     color: '#999',
+  },
+  imageContainer: {
+    position: 'relative',
+    alignSelf: 'center',
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingVertical: 5,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+  },
+  imageOverlayText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 12,
   },
 });
 
