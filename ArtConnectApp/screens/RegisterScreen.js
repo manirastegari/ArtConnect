@@ -11,7 +11,33 @@ const RegisterScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [userType, setUserType] = useState('Artist');
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const validatePassword = (password) => {
+    //  At least 8 characters, 1 uppercase, 1 lowercase, 1 number
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    return re.test(password);
+  };
+
   const handleRegister = async () => {
+    if (!fullname.trim()) {
+      Alert.alert('Error', 'Name cannot be empty');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      Alert.alert('Error', 'Password must be at least 8 characters long and include uppercase, lowercase, and a number');
+      return;
+    }
+
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match');
       return;
@@ -25,7 +51,7 @@ const RegisterScreen = ({ navigation }) => {
         },
         body: JSON.stringify({
           fullname,
-          email,
+          email: email.toLowerCase(),
           password,
           type: userType,
         }),
@@ -111,6 +137,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+    borderRadius: 5,
   },
   label: {
     fontSize: 16,

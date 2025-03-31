@@ -37,7 +37,7 @@ const LoginScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.toLowerCase(), password }),
       });
   
       const data = await response.json();
@@ -46,7 +46,7 @@ const LoginScreen = ({ navigation }) => {
         Alert.alert('Success', 'Logged in successfully');
         login(data.userId, data.userType);
         if (saveCredentials) {
-          await AsyncStorage.setItem('userEmail', email);
+          await AsyncStorage.setItem('userEmail', email.toLowerCase());
           await AsyncStorage.setItem('userPassword', password);
         } else {
           await AsyncStorage.removeItem('userEmail');
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
+    borderRadius: 5,
   },
   switchContainer: {
     flexDirection: 'row',
