@@ -181,7 +181,24 @@ const PostEventScreen = ({ navigation }) => {
           value={description}
           onChangeText={setDescription}
         />
-        <Text style={styles.label}>Venue Capacity: {venueCapacity}</Text>
+        <View style={styles.capacityContainer}>
+          <Text style={styles.label}>Venue Capacity: {venueCapacity}</Text>
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity
+              style={styles.capacityButton}
+              onPress={() => setVenueCapacity(prev => Math.max(5, prev - 1))}
+            >
+              <Text style={styles.buttonText}>-</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.capacityButton}
+              onPress={() => setVenueCapacity(prev => Math.min(50, prev + 1))}
+            >
+              <Text style={styles.buttonText}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* <Text style={styles.label}>Venue Capacity: {venueCapacity}</Text>
         <Slider
           style={{ width: '100%', height: 40 }}
           minimumValue={5}
@@ -191,7 +208,7 @@ const PostEventScreen = ({ navigation }) => {
           onValueChange={setVenueCapacity}
           minimumTrackTintColor="#4682b4"
           maximumTrackTintColor="#000000"
-        />
+        /> */}
         <CustomButton
           text="Select Date"
           onPress={() => setShowDatePicker(true)}
@@ -237,7 +254,7 @@ const PostEventScreen = ({ navigation }) => {
         <CustomButton
           text="Post Event"
           onPress={handlePostEvent}
-          color="#32CD32"
+          color="#228B22"
           width="100%"
         />
       </View>
@@ -304,6 +321,27 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 16,
     backgroundColor: '#fff',
+  },
+  capacityContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+  },
+  capacityButton: {
+    backgroundColor: '#4682b4',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 5,
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
