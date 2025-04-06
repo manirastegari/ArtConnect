@@ -84,43 +84,42 @@ const OrderScreen = ({ route, navigation }) => {
       <Header navigation={navigation} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View>
-          <View style={styles.section}>
-            <Text style={styles.header}>Order Details</Text>
-            <Text>Title: {itemDetails.title}</Text>
-            <Text>Type: {itemType}</Text>
-            <Text>Artist: {artistName}</Text>
-            {itemType.toLowerCase() === 'event' && (
-              <>
-                <Text>Date: {new Date(itemDetails.date).toLocaleDateString()}</Text>
-                <Text>Time: {itemDetails.time}</Text>
-
-                <View style={styles.capacityContainer}>
-                <Text style={styles.subHeader}>Number of Seats: {seats}</Text>
-                <View style={styles.buttonGroup}>
-                  <TouchableOpacity
-                    style={styles.capacityButton}
-                    onPress={() => setSeats(prev => Math.max(1, prev - 1))}
-                  >
-                    <Text style={styles.buttonText}>-</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.capacityButton}
-                    onPress={() => setSeats(prev => Math.min(itemDetails.venueCapacity, prev + 1))}
-                  >
-                    <Text style={styles.buttonText}>+</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+        <View style={styles.section}>
+          <Text style={styles.header}>Order Details</Text>
+          <Text>    <Text style={styles.boldLabel}>Title:</Text>    {itemDetails.title}</Text>
+          <Text>   <Text style={styles.boldLabel}>Type:</Text>    {itemType}</Text>
+          <Text>    <Text style={styles.boldLabel}>Artist:</Text>   {artistName}</Text>
+          {itemType.toLowerCase() === 'event' && (
+            <>
+              <Text>    <Text style={styles.boldLabel}>Date:</Text>    {new Date(itemDetails.date).toLocaleDateString()}</Text>
+              <Text>    <Text style={styles.boldLabel}>Time:</Text>   {itemDetails.time}</Text>
+              <View style={styles.capacityContainer}>
+                 <Text style={styles.subHeader}>Number of Seats: {seats}</Text>
+                 <View style={styles.buttonGroup}>
+                   <TouchableOpacity
+                     style={styles.capacityButton}
+                     onPress={() => setSeats(prev => Math.max(1, prev - 1))}
+                   >
+                     <Text style={styles.buttonText}>-</Text>
+                   </TouchableOpacity>
+                   <TouchableOpacity
+                     style={styles.capacityButton}
+                     onPress={() => setSeats(prev => Math.min(itemDetails.venueCapacity, prev + 1))}
+                   >
+                     <Text style={styles.buttonText}>+</Text>
+                   </TouchableOpacity>
+                 </View>
+               </View>
               </>
             )}
           </View>
 
           <View style={styles.section}>
             <Text style={styles.header}>Pricing</Text>
-            <Text>Price: ${price.toFixed(2)}</Text>
-            <Text>Delivery Fee: ${deliveryFee.toFixed(2)}</Text>
-            <Text>Tax: ${tax.toFixed(2)}</Text>
-            <Text>Total: ${totalPrice.toFixed(2)}</Text>
+            <Text>    <Text style={styles.boldLabel}>Price:</Text>                ${price.toFixed(2)}</Text>
+            <Text>    <Text style={styles.boldLabel}>Delivery Fee:</Text>   ${deliveryFee.toFixed(2)}</Text>
+            <Text>    <Text style={styles.boldLabel}>Tax:</Text>                   ${tax.toFixed(2)}</Text>
+            <Text>    <Text style={styles.boldLabel}>Total:</Text>                ${totalPrice.toFixed(2)}</Text>
           </View>
 
           <View style={styles.section}>
@@ -194,9 +193,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 5,
   },
+  picker: {
+    height: 50,
+    width: '100%',
+    marginBottom: 12,
+    backgroundColor: '#fff',
+  },
   button: {
     marginTop: 20,
     alignSelf: 'center',
+  },
+  boldLabel: {
+    fontWeight: 'bold',
   },
   capacityContainer: {
     flexDirection: 'row',
