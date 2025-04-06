@@ -14,8 +14,10 @@ const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [arts, setArts] = useState([]);
   const [events, setEvents] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  // const [categories, setCategories] = useState([]);
+  // const [selectedCategory, setSelectedCategory] = useState('');
+  const [categories, setCategories] = useState(['All']);
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const navigation = useNavigation();
 
@@ -43,27 +45,51 @@ const SearchScreen = () => {
     }
   };
 
-  const handleSearch = async () => {
+  const fetchResults = async () => {
     try {
-      const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts?query=${searchQuery}&category=${selectedCategory}`);
+      const categoryParam = selectedCategory !== 'All' ? `&category=${selectedCategory}` : '';
+      const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts?query=${searchQuery}${categoryParam}`);
       const artsData = await artsResponse.json();
       setArts(artsData);
 
-      const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events?query=${searchQuery}&category=${selectedCategory}`);
+      const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events?query=${searchQuery}${categoryParam}`);
       const eventsData = await eventsResponse.json();
       setEvents(eventsData);
 
       updateCategories([...artsData, ...eventsData]);
     } catch (error) {
-      console.error('Error fetching search results:', error);
+      console.error('Error fetching results:', error);
     }
   };
+  // const handleSearch = async () => {
+  //   try {
+  //     const artsResponse = await fetch(`${config.API_BASE_URL}/api/arts?query=${searchQuery}&category=${selectedCategory}`);
+  //     const artsData = await artsResponse.json();
+  //     setArts(artsData);
+
+  //     const eventsResponse = await fetch(`${config.API_BASE_URL}/api/events?query=${searchQuery}&category=${selectedCategory}`);
+  //     const eventsData = await eventsResponse.json();
+  //     setEvents(eventsData);
+
+  //     // updateCategories([...artsData, ...eventsData]);
+  //   } catch (error) {
+  //     console.error('Error fetching search results:', error);
+  //   }
+  // };
+
 
   const updateCategories = (items) => {
-    const allCategories = [...new Set(items.map(item => item.category))];
-    setCategories(allCategories);
+    const uniqueCategories = ['All', ...new Set(items.map(item => item.category))];
+    setCategories(uniqueCategories);
   };
+  // const updateCategories = (items) => {
+  //   const allCategories = [...new Set(items.map(item => item.category))];
+  //   setCategories(allCategories);
+  // };
 
+  const handleSearch = () => {
+    fetchResults();
+  };
   
   return (
     <View style={styles.container}>
@@ -87,7 +113,7 @@ const SearchScreen = () => {
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedCategory(itemValue)}
           >
-            <Picker.Item label="All Categories" value="" />
+            {/* <Picker.Item label="All Categories" value="" /> */}
             {categories.map((category, index) => (
               <Picker.Item key={index} label={category} value={category} />
             ))}
