@@ -84,16 +84,31 @@ const OrderScreen = ({ route, navigation }) => {
       <Header navigation={navigation} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View>
-        <View style={styles.section}>
-          <Text style={styles.header}>Order Details</Text>
-          <Text>    <Text style={styles.boldLabel}>Title:</Text>    {itemDetails.title}</Text>
-          <Text>   <Text style={styles.boldLabel}>Type:</Text>    {itemType}</Text>
-          <Text>    <Text style={styles.boldLabel}>Artist:</Text>   {artistName}</Text>
-          {itemType.toLowerCase() === 'event' && (
-            <>
-              <Text>    <Text style={styles.boldLabel}>Date:</Text>    {new Date(itemDetails.date).toLocaleDateString()}</Text>
-              <Text>    <Text style={styles.boldLabel}>Time:</Text>   {itemDetails.time}</Text>
-              <View style={styles.capacityContainer}>
+          <View style={styles.section}>
+            <Text style={styles.header}>Order Details</Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Title:</Text>
+              <Text style={styles.detailValue}>{itemDetails.title}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Type:</Text>
+              <Text style={styles.detailValue}>{itemType}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Artist:</Text>
+              <Text style={styles.detailValue}>{artistName}</Text>
+            </View>
+            {itemType.toLowerCase() === 'event' && (
+              <>
+                <View style={styles.detailRow}>
+                  <Text style={styles.boldLabel}>Date:</Text>
+                  <Text style={styles.detailValue}>{new Date(itemDetails.date).toLocaleDateString()}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.boldLabel}>Time:</Text>
+                  <Text style={styles.detailValue}>{itemDetails.time}</Text>
+                </View>
+                <View style={styles.capacityContainer}>
                  <Text style={styles.subHeader}>Number of Seats: {seats}</Text>
                  <View style={styles.buttonGroup}>
                    <TouchableOpacity
@@ -116,11 +131,30 @@ const OrderScreen = ({ route, navigation }) => {
 
           <View style={styles.section}>
             <Text style={styles.header}>Pricing</Text>
-            <Text>    <Text style={styles.boldLabel}>Price:</Text>                ${price.toFixed(2)}</Text>
-            <Text>    <Text style={styles.boldLabel}>Delivery Fee:</Text>   ${deliveryFee.toFixed(2)}</Text>
-            <Text>    <Text style={styles.boldLabel}>Tax:</Text>                   ${tax.toFixed(2)}</Text>
-            <Text>    <Text style={styles.boldLabel}>Total:</Text>                ${totalPrice.toFixed(2)}</Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Price:</Text>
+              <Text style={styles.detailValue}>${price.toFixed(2)}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Delivery Fee:</Text>
+              <Text style={styles.detailValue}>${deliveryFee.toFixed(2)}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Tax:</Text>
+              <Text style={styles.detailValue}>${tax.toFixed(2)}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Total:</Text>
+              <Text style={styles.detailValue}>${totalPrice.toFixed(2)}</Text>
+            </View>
           </View>
+          {/* <View style={styles.section}>
+            <Text style={styles.header}>Pricing</Text>
+            <Text>Price: ${price.toFixed(2)}</Text>
+            <Text>Delivery Fee: ${deliveryFee.toFixed(2)}</Text>
+            <Text>Tax: ${tax.toFixed(2)}</Text>
+            <Text>Total: ${totalPrice.toFixed(2)}</Text>
+          </View> */}
 
           <View style={styles.section}>
             <Text style={styles.header}>Delivery Information</Text>
@@ -203,9 +237,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignSelf: 'center',
   },
-  boldLabel: {
-    fontWeight: 'bold',
-  },
   capacityContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -226,6 +257,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  boldLabel: {
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  detailValue: {
+    flex: 2,
+    textAlign: 'right',
   },
 });
 

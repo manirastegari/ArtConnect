@@ -177,7 +177,7 @@ const PostArtScreen = ({ navigation }) => {
                 <CustomButton
                     text="Post Art"
                     onPress={handlePostArt}
-                    color="#32CD32"
+                    color="#228B22"
                     width="100%"
                 />
             </View>
