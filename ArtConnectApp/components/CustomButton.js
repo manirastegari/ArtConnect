@@ -4,14 +4,14 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 const CustomButton = ({ onPress, text, color, width, disabled, height, style }) => {
   return (
     <TouchableOpacity
-      onPress={disabled ? null : onPress} // Disable onPress if the button is disabled
+      onPress={disabled ? null : onPress} 
       style={[
         styles.button,
-        { backgroundColor: disabled ? '#ccc' : color, width: width, height: height }, // Change color if disabled
-        disabled && styles.disabledButton, // Apply additional styles if disabled
+        { backgroundColor: disabled ? '#ccc' : color, width: width, height: height }, 
+        disabled && styles.disabledButton, 
         style,
       ]}
-      activeOpacity={disabled ? 1 : 0.7} // Prevent opacity change if disabled
+      activeOpacity={disabled ? 1 : 0.7} 
     >
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   disabledButton: {
-    opacity: 0.6, // Reduce opacity for a disabled look
+    opacity: 0.6,
   },
   text: {
     color: '#fff',

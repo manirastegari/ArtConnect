@@ -247,9 +247,13 @@ const SettingsScreen = ({ navigation }) => {
     <LoginPrompt navigation={navigation} />
   );
 };
-
+const iconColors = {
+  Search: '#ff6347',
+  Dashboard: '#32cd32', 
+  Favorites: '#ffa500',
+  Settings: '#8a2be2',
+};
 const Tab = createBottomTabNavigator();
-// Q
 const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   
@@ -260,20 +264,40 @@ const HomeScreen = ({ navigation }) => {
       </View>
       <Tab.Navigator
         screenOptions={({ route }) => ({
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-
-            if (route.name === 'Search') {
-              iconName = 'search';
-            } else if (route.name === 'Dashboard') {
-              iconName = 'brush';
-            } else if (route.name === 'Favorites') {
-              iconName = 'heart';
-            } else if (route.name === 'Settings') {
-              iconName = 'settings';
+            switch (route.name) {
+              case 'Search':
+                iconName = 'search';
+                break;
+              case 'Dashboard':
+                iconName = 'brush';
+                break;
+              case 'Favorites':
+                iconName = 'heart';
+                break;
+              case 'Settings':
+                iconName = 'settings';
+                break;
+              default:
+                iconName = 'circle'; // default icon
             }
+            const iconColor = focused ? iconColors[route.name] : color;
+          // tabBarIcon: ({ color, size }) => {
+          //   let iconName;
 
-            return <Ionicons name={iconName} size={size} color={color} />;
+          //   if (route.name === 'Search') {
+          //     iconName = 'search';
+          //   } else if (route.name === 'Dashboard') {
+          //     iconName = 'brush';
+          //   } else if (route.name === 'Favorites') {
+          //     iconName = 'heart';
+          //   } else if (route.name === 'Settings') {
+          //     iconName = 'settings';
+          //   }
+
+          return <Ionicons name={iconName} size={size} color={iconColor} />;
+            // return <Ionicons name={iconName} size={size} color={color} />;
           },
           headerShown: false,
         })}

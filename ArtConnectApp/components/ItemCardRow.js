@@ -31,12 +31,10 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 5,
-    // Shadow properties for iOS
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    // Shadow properties for Android
     elevation: 3,
   },
   imageContainer: {
