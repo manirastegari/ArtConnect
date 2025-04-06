@@ -212,9 +212,21 @@ const SettingsScreen = ({ navigation }) => {
         <View style={styles.content}>
         {userDetails ? (
           <>
-          <Text style={styles.label}>Name: <Text style={styles.value}>{userDetails.fullname}</Text></Text>
-          <Text style={styles.label}>Email: <Text style={styles.value}>{userDetails.email}</Text></Text>
-          <Text style={styles.label}>User Type: <Text style={styles.value}>{userDetails.type}</Text></Text>
+          <View style={styles.section}>
+            <Text style={styles.header}>User Details</Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Name:</Text>
+              <Text style={styles.detailValue}>{userDetails.fullname}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>Email:</Text>
+              <Text style={styles.detailValue}>{userDetails.email}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.boldLabel}>User Type:</Text>
+              <Text style={styles.detailValue}>{userDetails.type}</Text>
+            </View>
+          </View>
         </>
         ) : (
           <Text>Loading user details...</Text>
@@ -226,7 +238,7 @@ const SettingsScreen = ({ navigation }) => {
         <CustomButton
           text="Logout"
           color="#ff6347"
-          width="80%"
+          width="90%"
           onPress={handleLogout}
         />
       </View>
@@ -413,6 +425,34 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     fontSize: 12,
+  },
+  section: {
+    marginBottom: 20,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
+  },
+  header: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  boldLabel: {
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  detailValue: {
+    flex: 2,
+    textAlign: 'right', 
   },
 });
 

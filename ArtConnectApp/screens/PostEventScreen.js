@@ -198,17 +198,6 @@ const PostEventScreen = ({ navigation }) => {
              </TouchableOpacity>
            </View>
          </View>
-        {/* <Text style={styles.label}>Venue Capacity: {venueCapacity}</Text>
-        <Slider
-          style={{ width: '100%', height: 40 }}
-          minimumValue={5}
-          maximumValue={50}
-          step={1}
-          value={venueCapacity}
-          onValueChange={setVenueCapacity}
-          minimumTrackTintColor="#4682b4"
-          maximumTrackTintColor="#000000"
-        /> */}
         <CustomButton
           text="Select Date"
           onPress={() => setShowDatePicker(true)}
