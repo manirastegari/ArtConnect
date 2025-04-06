@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, Alert, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { AuthContext } from '../AuthContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -93,16 +93,24 @@ const OrderScreen = ({ route, navigation }) => {
               <>
                 <Text>Date: {new Date(itemDetails.date).toLocaleDateString()}</Text>
                 <Text>Time: {itemDetails.time}</Text>
-                <Text style={styles.subHeader}>Select Number of Seats</Text>
-                <Picker
-                  selectedValue={seats}
-                  onValueChange={(value) => setSeats(value)}
-                  style={styles.picker}
-                >
-                  {[...Array(itemDetails.venueCapacity).keys()].map((_, index) => (
-                    <Picker.Item key={index} label={`${index + 1}`} value={index + 1} />
-                  ))}
-                </Picker>
+
+                <View style={styles.capacityContainer}>
+                <Text style={styles.subHeader}>Number of Seats: {seats}</Text>
+                <View style={styles.buttonGroup}>
+                  <TouchableOpacity
+                    style={styles.capacityButton}
+                    onPress={() => setSeats(prev => Math.max(1, prev - 1))}
+                  >
+                    <Text style={styles.buttonText}>-</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.capacityButton}
+                    onPress={() => setSeats(prev => Math.min(itemDetails.venueCapacity, prev + 1))}
+                  >
+                    <Text style={styles.buttonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
               </>
             )}
           </View>
@@ -186,15 +194,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 5,
   },
-  picker: {
-    height: 50,
-    width: '100%',
-    marginBottom: 12,
-    backgroundColor: '#fff',
-  },
   button: {
     marginTop: 20,
     alignSelf: 'center',
+  },
+  capacityContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+  },
+  capacityButton: {
+    backgroundColor: '#4682b4',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 5,
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
